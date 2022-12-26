@@ -3,8 +3,10 @@ import Nav from '../components/Nav/Nav';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Testimonials from '../components/Testimonials/Testimonials';
+import { useHistory } from 'react-router-dom';
 
 const Home = () => {
+  const history = useHistory();
 
   useEffect(() => {
     AOS.init();
@@ -17,13 +19,13 @@ const Home = () => {
           <div class="place-self-center mr-auto lg:col-span-7">
             <h1 class="mb-4 max-w-2xl text-4xl font-extrabold leading-none md:text-5xl xl:text-6xl dark:text-white">Smart Fish Management System for fishponds</h1>
             <p class="mb-6 max-w-2xl font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">A smart fish management system that measures, controls, monitors, analyzes, manages, predicts, and make decisions on the fishponds in real-time using IoT and CNN technology.</p>
-            <a href="/login" class="inline-flex justify-center gap-2 items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+            <button onClick={() => history.push("/login")} class="inline-flex justify-center gap-2 items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
               <span>
                 Get started
               </span>
               <img src="/icons/right-arrow.svg" className='h-6' alt="" />
 
-            </a>
+            </button>
           </div>
           <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
             <img src="/fishing_hoxa.svg" className='w-[400px]' alt="mockup" />

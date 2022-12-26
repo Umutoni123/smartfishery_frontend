@@ -7,10 +7,10 @@ function Login() {
     <section className="flex items-center justify-center">
       <div className="relative w-2/3 overflow-hidden bg-white">
         <div className="flex flex-col items-center justify-center w-full p-8">
-          <a href="/" class="flex items-center">
+          <button onClick={() => history.push("/login")} class="flex items-center">
             <img src="/favicon.png" class="mr-3 h-6 sm:h-9" alt="Smart Fishery Logo" />
             <span class="self-center text-3xl font-semibold whitespace-nowrap dark:text-white">Smart Fishery</span>
-          </a>
+          </button>
           <div className="flex flex-col justify-center h-full p-4 py-16 bg-blueGray-100">
             <form className="mx-auto md:max-w-lg">
               <label className="block mb-4">

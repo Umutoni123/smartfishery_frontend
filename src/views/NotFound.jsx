@@ -1,9 +1,19 @@
-import React from 'react'
+import React from "react";
+import { useHistory } from "react-router-dom";
 
 const NotFound = () => {
-  return <main className='flex items-center justify-center w-screen h-screen text-lg'>
-    <p>Not found! <a href="/" className='text-blue-400'>Back to home</a></p>
-  </main>
+  const history = useHistory();
+
+  return (
+    <main className="flex items-center justify-center w-screen h-screen text-lg">
+      <p>
+        Not found!{" "}
+        <span onClick={() => history.push("/login")} className="text-blue-400">
+          Back to home
+        </span>
+      </p>
+    </main>
+  );
 };
 
-export default NotFound
+export default NotFound;
