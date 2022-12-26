@@ -17,7 +17,7 @@ const Home = () => {
           <div class="place-self-center mr-auto lg:col-span-7">
             <h1 class="mb-4 max-w-2xl text-4xl font-extrabold leading-none md:text-5xl xl:text-6xl dark:text-white">Smart Fish Management System for fishponds</h1>
             <p class="mb-6 max-w-2xl font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">A smart fish management system that measures, controls, monitors, analyzes, manages, predicts, and make decisions on the fishponds in real-time using IoT and CNN technology.</p>
-            <a href="#" class="inline-flex justify-center gap-2 items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+            <a href="/login" class="inline-flex justify-center gap-2 items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
               <span>
                 Get started
               </span>
