@@ -7,7 +7,7 @@ function Login() {
     <section className="flex items-center justify-center">
       <div className="relative w-2/3 overflow-hidden bg-white">
         <div className="flex flex-col items-center justify-center w-full p-8">
-          <button onClick={() => history.push("/login")} class="flex items-center">
+          <button onClick={() => history.push("/")} class="flex items-center">
             <img src="/favicon.png" class="mr-3 h-6 sm:h-9" alt="Smart Fishery Logo" />
             <span class="self-center text-3xl font-semibold whitespace-nowrap dark:text-white">Smart Fishery</span>
           </button>
