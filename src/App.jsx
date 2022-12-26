@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import Dashboard from './views/Dashboard';
 
 import Home from './views/Home'
 import Login from './views/Login';
@@ -17,6 +18,9 @@ const App = () => {
         </Route>
         <Route exact path="/login">
           <Login />
+        </Route>
+        <Route exact path="/dashboard">
+          <Dashboard />
         </Route>
         <Route>
           <NotFound />
