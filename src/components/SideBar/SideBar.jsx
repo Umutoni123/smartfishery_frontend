@@ -88,15 +88,15 @@ function SideBar() {
             </ul>
 
             <div className="pb-8">
-              <a className="flex items-center py-3 pl-3 pr-2 rounded text-gray-50 hover:bg-gray-900" href="#">
+              <p onClick={() => history.push("/")} className="flex items-center py-3 pl-3 pr-2 rounded text-gray-50 hover:bg-gray-900">
                 <span className="inline-block mr-4">
                   <svg className="w-4 h-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
                   </svg>
                 </span>
                 <span>Home</span>
-              </a>
-              <a className="flex items-center py-3 pl-3 pr-2 rounded text-gray-50 hover:bg-gray-900" href="#">
+              </p>
+              <a className="flex items-center py-3 pl-3 pr-2 rounded text-gray-50 hover:bg-gray-900" href="/">
                 <span className="inline-block mr-4">
                 </span>
                 <span>Log Out</span>
