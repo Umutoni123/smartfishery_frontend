@@ -20,9 +20,9 @@ function SideBar() {
       </nav>
       <div className="relative z-50 hidden lg:block navbar-menu">
         <div className="fixed inset-0 bg-gray-800 navbar-backdrop lg:hidden opacity-10"></div>
-        <nav className="fixed top-0 bottom-0 left-0 flex flex-col w-3/4 pt-6 pb-8 overflow-y-auto bg-gray-800 lg:w-80 sm:max-w-xs">
+        <nav className="fixed top-0 bottom-0 left-0 flex flex-col w-2/12 pt-6 pb-8 overflow-y-auto bg-gray-800">
           <div onClick={() => history.push("/")} className="flex items-center w-full px-6 pb-6 mb-6 border-gray-700 cursor-pointer lg:border-b">
-            <h1 className="self-center text-2xl font-semibold text-white whitespace-nowrap dark:text-white">Smart Fishery</h1>
+            <h1 className="self-center font-semibold text-white text-md xl:text-2xl whitespace-nowrap dark:text-white">Smart Fishery</h1>
           </div>
           <div className="px-4 pb-6 space-y-4">
             <h3 className="mb-2 text-xs font-medium text-gray-500 uppercase">Operations</h3>
