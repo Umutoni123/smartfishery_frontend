@@ -1,8 +1,10 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import Dashboard from './views/Dashboard';
+import FishPonds from './views/FishPonds';
 
 import Home from './views/Home'
+import Locations from './views/Locations';
 import Login from './views/Login';
 import NotFound from './views/NotFound'
 
@@ -19,8 +21,11 @@ const App = () => {
         <Route exact path="/login">
           <Login />
         </Route>
-        <Route exact path="/dashboard">
-          <Dashboard />
+        <Route exact path="/fishponds">
+          <Dashboard children={<FishPonds />} />
+        </Route>
+        <Route exact path="/locations">
+          <Dashboard children={<Locations />} />
         </Route>
         <Route>
           <NotFound />

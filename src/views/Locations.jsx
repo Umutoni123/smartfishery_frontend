@@ -1,17 +1,115 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Modal from '../components/Modal/Modal';
-import { selectFishPonds } from '../store/modules/fishPondsSlice';
+import { selectLocations, setLocations } from '../store/modules/locationSlice';
 import { useDispatch, useSelector } from "react-redux";
+import { Cells, Districts, Provinces, Sectors } from 'rwanda';
+import AppServices from "../services";
+import toast from 'react-hot-toast';
 
-function FishPonds() {
-  const fishPonds = useSelector(selectFishPonds);
+function Locations() {
+  const locations = useSelector(selectLocations);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
-  const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
+  const [showModal, setShowModal] = useState({ modal: "", closed: true });
+  const [locationInfo, setLocationInfo] = React.useState({
+    Location_name: "",
+    Province: "",
+    District: "",
+    Sector: "",
+    Cell: ""
+  });
+  const dispatch = useDispatch();
+
+  const handleSubmit = () => {
+    toast.promise(
+      AppServices.createItem('Location', locationInfo),
+      {
+        loading: 'Creating location ...',
+        success: (response) => {
+          dispatch(setLocations(
+            [
+              ...locations,
+              response.data.data
+            ]
+          ));
+          closeModal();
+          return "Location created successfully";
+        },
+        error: (error) => {
+          const message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          return message;
+        },
+      }
+    );
+  }
+
+  const handleEdit = () => {
+    toast.promise(
+      AppServices.updateItem(`Location/${locationInfo.id}`, locationInfo),
+      {
+        loading: 'Editing location ...',
+        success: (response) => {
+          dispatch(setLocations(
+            [
+              ...(locations.filter((location) => location.id !== locationInfo.id)),
+              response.data.data
+            ]
+          ));
+          closeModal();
+          return "Location edited successfully";
+        },
+        error: (error) => {
+          const message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          return message;
+        },
+      }
+    );
+  }
+
+  const handleDelete = () => {
+    toast.promise(
+      AppServices.deleteItem(`Location/${locationInfo.id}`),
+      {
+        loading: 'Deleting location ...',
+        success: (response) => {
+          dispatch(setLocations(
+            [
+              ...(locations.filter((location) => location.id !== locationInfo.id)),
+            ]
+          ));
+          closeModal();
+          return "Location deleted successfully";
+        },
+        error: (error) => {
+          const message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          return message;
+        },
+      }
+    );
+  }
+
   return (
     <div className='flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5'>
-      <h1 className='text-3xl font-bold'>Fish Ponds</h1>
+      <h1 className='text-3xl font-bold'>Fish Locations</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -38,8 +136,7 @@ function FishPonds() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    Repellendus atque culpa voluptas a ad ducimus corrupti nulla?
+                    Once you delete this location, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -50,7 +147,9 @@ function FishPonds() {
                     Cancel
                   </button>
                   <button
-                    onClick={closeModal}
+                    onClick={
+                      handleDelete
+                    }
                     className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Yes, delete
@@ -60,28 +159,75 @@ function FishPonds() {
             ) : showModal.modal === "add" ? (
               <div className="max-w-xl mx-auto overflow-hidden bg-white px-7 rounded-xl">
                 <div className="flex flex-col items-start justify-center h-full py-7 bg-blueGray-100">
-                  <form className="mx-auto md:max-w-lg">
+                  <form className="mx-auto md:max-w-lg" onSubmit={
+                    (e) => {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }>
                     <label className="block mb-4">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Pond name *
+                        Location name *
                       </p>
                       <input
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                         id="signInInput1-1"
                         type="text"
                         placeholder="Enter pond name"
+                        required
+                        onChange={(e) =>
+                          setLocationInfo({
+                            ...locationInfo,
+                            Location_name: e.target.value,
+                          })
+                        }
                       />
                     </label>
                     <label className="block mb-5">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Location *
+                        Province *
                       </p>
-                      <select className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300">
-                        <option value="">Rusizi, Kamembe</option>
-                        <option value="">Kicukiro, Kagarama</option>
-                        <option value="">Nyabihu, Mukamira</option>
+                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                        (e) => setLocationInfo({ ...locationInfo, Province: e.target.value })
+                      }>
+                        <option value=""></option>
+                        {Provinces().map(el => <option key={el} value={el}>{el}</option>)}
                       </select>
                     </label>
+                    {locationInfo.Province !== '' && <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        District *
+                      </p>
+                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                        (e) => setLocationInfo({ ...locationInfo, District: e.target.value })
+                      }>
+                        <option value=""></option>
+                        {Districts(locationInfo.Province).map(el => <option key={el} value={el}>{el}</option>)}
+                      </select>
+                    </label>}
+                    {locationInfo.District !== '' && <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Sector *
+                      </p>
+                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                        (e) => setLocationInfo({ ...locationInfo, Sector: e.target.value })
+                      }>
+                        <option value=""></option>
+                        {Sectors(locationInfo.Province, locationInfo.District).map(el => <option key={el} value={el}>{el}</option>)}
+                      </select>
+                    </label>}
+                    {locationInfo.Sector !== '' && <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Cell *
+                      </p>
+                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                        (e) => setLocationInfo({ ...locationInfo, Cell: e.target.value })
+                      }>
+                        <option value=""></option>
+                        {Cells(locationInfo.Province, locationInfo.District, locationInfo.Sector).map(el => <option key={el} value={el}>{el}</option>)}
+                      </select>
+                    </label>}
+                    <input type="submit" value="" hidden id='create' />
                   </form>
                 </div>
                 <div className="px-6 pt-1 pb-6 -mb-2 text-right bg-white">
@@ -92,8 +238,12 @@ function FishPonds() {
                     Cancel
                   </button>
                   <button
-                    onClick={closeModal}
                     className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
+                    onClick={
+                      () => {
+                        document.getElementById('create').click();
+                      }
+                    }
                   >
                     Add
                   </button>
@@ -103,43 +253,102 @@ function FishPonds() {
               showModal.modal === "edit" && (
                 <div className="max-w-xl mx-auto overflow-hidden bg-white px-7 rounded-xl">
                   <div className="flex flex-col items-start justify-center h-full py-7 bg-blueGray-100">
-                    <form className="mx-auto md:max-w-lg">
+                    <form className="mx-auto md:max-w-lg" onSubmit={
+                      (e) => {
+                        e.preventDefault();
+                        handleEdit();
+                      }
+                    }>
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Pond name *
+                          Location name *
                         </p>
                         <input
-                          value="Kicukiro pond"
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           id="signInInput1-1"
                           type="text"
+                          defaultValue={locationInfo.Location_name}
                           placeholder="Enter pond name"
+                          required
+                          onChange={(e) =>
+                            setLocationInfo({
+                              ...locationInfo,
+                              Location_name: e.target.value,
+                            })
+                          }
                         />
                       </label>
                       <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Location *
+                          Province *
                         </p>
-                        <select className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300">
-                          <option value="">Rusizi, Kamembe</option>
-                          <option value="">Kicukiro, Kagarama</option>
-                          <option value="">Nyabihu, Mukamira</option>
+                        <select defaultValue={
+                          locationInfo.Province
+                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                          (e) => setLocationInfo({ ...locationInfo, Province: e.target.value })
+                        }>
+                          <option value=""></option>
+                          {Provinces().map(el => <option key={el} value={el}>{el}</option>)}
                         </select>
                       </label>
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          District *
+                        </p>
+                        <select defaultValue={
+                          locationInfo.District
+                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                          (e) => setLocationInfo({ ...locationInfo, District: e.target.value })
+                        }>
+                          <option value=""></option>
+                          {Districts(locationInfo.Province).map(el => <option key={el} value={el}>{el}</option>)}
+                        </select>
+                      </label>
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Sector *
+                        </p>
+                        <select defaultValue={
+                          locationInfo.Sector
+                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                          (e) => setLocationInfo({ ...locationInfo, Sector: e.target.value })
+                        }>
+                          <option value=""></option>
+                          {Sectors(locationInfo.Province, locationInfo.District).map(el => <option key={el} value={el}>{el}</option>)}
+                        </select>
+                      </label>
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Cell *
+                        </p>
+                        <select defaultValue={
+                          locationInfo.Cell
+                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                          (e) => setLocationInfo({ ...locationInfo, Cell: e.target.value })
+                        }>
+                          <option value=""></option>
+                          {Cells(locationInfo.Province, locationInfo.District, locationInfo.Sector).map(el => <option key={el} value={el}>{el}</option>)}
+                        </select>
+                      </label>
+                      <input type="submit" value="" hidden id='create' />
                     </form>
                   </div>
                   <div className="px-6 pt-1 pb-6 -mb-2 text-right bg-white">
                     <button
-                      onClick={closeModal}
+                      onclick={closeModal}
                       className="inline-block w-full px-5 py-3 mb-2 mr-4 font-semibold leading-6 text-center text-white transition duration-200 bg-gray-500 rounded-lg sm:w-auto hover:bg-gray-400"
                     >
                       Cancel
                     </button>
                     <button
-                      onClick={closeModal}
                       className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
+                      onClick={
+                        () => {
+                          document.getElementById('create').click();
+                        }
+                      }
                     >
-                      Save Changes
+                      Save
                     </button>
                   </div>
                 </div>
@@ -196,7 +405,7 @@ function FishPonds() {
                       </svg>
                     </div>
                     <div className="hidden font-bold sm:block">
-                      Add new fish pond
+                      Add new location
                     </div>
                   </span>
                 </button>
@@ -225,19 +434,19 @@ function FishPonds() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Pond ID
+                      Location ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Pond Name
+                      Location Name
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Location
+                      Province/District/Sector/Cell
                     </th>
                     <th
                       scope="col"
@@ -254,7 +463,7 @@ function FishPonds() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {fishPonds.map((fishPond) => (
+                  {locations.map((location) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -268,23 +477,28 @@ function FishPonds() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishPond.Pond_Id}
+                        {location.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishPond.Pond_name}
+                        {location.Location_name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishPond.locationi}
+                        {`${location.Province}, ${location.District}, ${location.Sector}, ${location.Cell}`}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                        <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                        <a onClick={() => {
+                          setLocationInfo(location)
+                          setShowModal({ modal: "edit", closed: false })
+                        }} className="text-green-500 hover:text-green-700" href="#">
                           Edit
                         </a>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                         <a
-                          onClick={() =>
+                          onClick={() => {
+                            setLocationInfo(location);
                             setShowModal({ modal: "delete", closed: false })
+                          }
                           }
                           className="text-red-500 hover:text-red-700"
                           href="#"
@@ -303,4 +517,4 @@ function FishPonds() {
   )
 }
 
-export default FishPonds
+export default Locations
