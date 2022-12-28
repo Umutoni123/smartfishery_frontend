@@ -12,6 +12,7 @@ import { useEffect, useState, } from 'react'
 import { useHistory } from "react-router-dom"
 import { setFishPonds } from '../store/modules/fishPondsSlice';
 import { setLocations } from '../store/modules/locationSlice';
+import { setCooperatives } from '../store/modules/cooperativeSlice';
 
 function Dashboard({ children }) {
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -41,11 +42,11 @@ function Dashboard({ children }) {
           dispatch(setFishPonds(response.data.data));
         }
       });
-      // AppServices.getItems('productionlines').then((response) => {
-      //   if (response.data) {
-      //     dispatch(setProductionLines(Object.values(response.data)));
-      //   }
-      // });
+      AppServices.getItems('cooperatives').then((response) => {
+        if (response.data) {
+          dispatch(setCooperatives(response.data.data));
+        }
+      });
       // AppServices.getItems('samplinglocations').then((response) => {
       //   if (response.data) {
       //     dispatch(setSamplingLocations(Object.values(response.data)));

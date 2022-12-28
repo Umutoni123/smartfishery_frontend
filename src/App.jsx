@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import Cooperatives from './views/Cooperative';
 import Dashboard from './views/Dashboard';
 import FishPonds from './views/FishPonds';
 
@@ -26,6 +27,9 @@ const App = () => {
         </Route>
         <Route exact path="/locations">
           <Dashboard children={<Locations />} />
+        </Route>
+        <Route exact path="/cooperatives">
+          <Dashboard children={<Cooperatives />} />
         </Route>
         <Route>
           <NotFound />

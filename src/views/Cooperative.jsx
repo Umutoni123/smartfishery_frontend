@@ -1,40 +1,40 @@
 import React, { useState } from 'react'
 import Modal from '../components/Modal/Modal';
-import { selectLocations, setLocations } from '../store/modules/locationSlice';
+import { selectCooperatives, setCooperatives } from '../store/modules/cooperativeSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { Cells, Districts, Provinces, Sectors } from 'rwanda';
 import AppServices from "../services";
 import toast from 'react-hot-toast';
+import { selectLocations } from '../store/modules/locationSlice';
 
-function Locations() {
+function Cooperatives() {
+  const cooperatives = useSelector(selectCooperatives);
   const locations = useSelector(selectLocations);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
   const [showModal, setShowModal] = useState({ modal: "", closed: true });
-  const [locationInfo, setLocationInfo] = React.useState({
-    Location_name: "",
-    Province: "",
-    District: "",
-    Sector: "",
-    Cell: ""
+  const [cooperativeInfo, setCooperativeInfo] = React.useState({
+    cooperativename: "",
+    description: "",
+    contact: "",
+    locationid: ""
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
     toast.promise(
-      AppServices.createItem('Location', locationInfo),
+      AppServices.createItem('cooperatives', cooperativeInfo),
       {
-        loading: 'Creating location ...',
+        loading: 'Creating cooperative ...',
         success: (response) => {
-          dispatch(setLocations(
+          dispatch(setCooperatives(
             [
-              ...locations,
+              ...cooperatives,
               response.data.data
             ]
           ));
           closeModal();
-          return "Location created successfully";
+          return "Cooperative created successfully";
         },
         error: (error) => {
           const message =
@@ -52,18 +52,18 @@ function Locations() {
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`Location/${locationInfo.id}`, locationInfo),
+      AppServices.updateItem(`cooperatives/${cooperativeInfo.id}`, cooperativeInfo),
       {
-        loading: 'Editing location ...',
+        loading: 'Editing cooperative ...',
         success: (response) => {
-          dispatch(setLocations(
+          dispatch(setCooperatives(
             [
-              ...(locations.filter((location) => location.id !== locationInfo.id)),
+              ...(cooperatives.filter((cooperatives) => cooperatives.id !== cooperativeInfo.id)),
               response.data.data
             ]
           ));
           closeModal();
-          return "Location edited successfully";
+          return "Cooperative edited successfully";
         },
         error: (error) => {
           const message =
@@ -81,17 +81,17 @@ function Locations() {
 
   const handleDelete = () => {
     toast.promise(
-      AppServices.deleteItem(`Location/${locationInfo.id}`),
+      AppServices.deleteItem(`cooperatives/${cooperativeInfo.id}`),
       {
-        loading: 'Deleting location ...',
+        loading: 'Deleting cooperative ...',
         success: (response) => {
-          dispatch(setLocations(
+          dispatch(setCooperatives(
             [
-              ...(locations.filter((location) => location.id !== locationInfo.id)),
+              ...(cooperatives.filter((cooperatives) => cooperatives.id !== cooperativeInfo.id)),
             ]
           ));
           closeModal();
-          return "Location deleted successfully";
+          return "Cooperative deleted successfully";
         },
         error: (error) => {
           const message =
@@ -109,7 +109,7 @@ function Locations() {
 
   return (
     <div className='flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5'>
-      <h1 className='text-3xl font-bold'>Fish Locations</h1>
+      <h1 className='text-3xl font-bold'>Fish Cooperatives</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -136,7 +136,7 @@ function Locations() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this location, there is no going back.
+                    Once you delete this cooperative, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -167,66 +167,66 @@ function Locations() {
                   }>
                     <label className="block mb-4">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Location name *
+                        Cooperative name *
                       </p>
                       <input
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        id="signInInput1-1"
                         type="text"
-                        placeholder="Enter pond name"
+                        placeholder="Enter cooperative name"
                         required
                         onChange={(e) =>
-                          setLocationInfo({
-                            ...locationInfo,
-                            Location_name: e.target.value,
+                          setCooperativeInfo({
+                            ...cooperativeInfo,
+                            cooperativename: e.target.value,
                           })
                         }
                       />
                     </label>
+                    <label className="block mb-4">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Description *
+                      </p>
+                      <input
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        type="text"
+                        placeholder="Enter cooperative description"
+                        required
+                        onChange={(e) =>
+                          setCooperativeInfo({
+                            ...cooperativeInfo,
+                            description: e.target.value,
+                          })
+                        }
+                      />
+                    </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Contact *
+                        </p>
+                        <input
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          type="text"
+                          placeholder="Enter cooperative contact"
+                          required
+                          onChange={(e) =>
+                            setCooperativeInfo({
+                              ...cooperativeInfo,
+                              contact: e.target.value,
+                            })
+                          }
+                        />
+                      </label>
                     <label className="block mb-5">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Province *
+                        Location *
                       </p>
                       <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                        (e) => setLocationInfo({ ...locationInfo, Province: e.target.value })
+                        (e) => setCooperativeInfo({ ...cooperativeInfo, locationid: e.target.value })
                       }>
                         <option value=""></option>
-                        {Provinces().map(el => <option key={el} value={el}>{el}</option>)}
+                        {locations.map(el => <option key={el.id} value={el.id}>{el.Location_name}</option>)}
                       </select>
                     </label>
-                    {locationInfo.Province !== '' && <label className="block mb-5">
-                      <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        District *
-                      </p>
-                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                        (e) => setLocationInfo({ ...locationInfo, District: e.target.value })
-                      }>
-                        <option value=""></option>
-                        {Districts(locationInfo.Province).map(el => <option key={el} value={el}>{el}</option>)}
-                      </select>
-                    </label>}
-                    {locationInfo.District !== '' && <label className="block mb-5">
-                      <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Sector *
-                      </p>
-                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                        (e) => setLocationInfo({ ...locationInfo, Sector: e.target.value })
-                      }>
-                        <option value=""></option>
-                        {Sectors(locationInfo.Province, locationInfo.District).map(el => <option key={el} value={el}>{el}</option>)}
-                      </select>
-                    </label>}
-                    {locationInfo.Sector !== '' && <label className="block mb-5">
-                      <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Cell *
-                      </p>
-                      <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                        (e) => setLocationInfo({ ...locationInfo, Cell: e.target.value })
-                      }>
-                        <option value=""></option>
-                        {Cells(locationInfo.Province, locationInfo.District, locationInfo.Sector).map(el => <option key={el} value={el}>{el}</option>)}
-                      </select>
-                    </label>}
                     <input type="submit" value="" hidden id='create' />
                   </form>
                 </div>
@@ -261,73 +261,75 @@ function Locations() {
                     }>
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Location name *
+                          Cooperative name *
                         </p>
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          id="signInInput1-1"
                           type="text"
-                          defaultValue={locationInfo.Location_name}
-                          placeholder="Enter pond name"
+                          placeholder="Enter cooperative name"
+                          defaultValue={
+                            cooperativeInfo.cooperativename
+                          }
                           required
                           onChange={(e) =>
-                            setLocationInfo({
-                              ...locationInfo,
-                              Location_name: e.target.value,
+                            setCooperativeInfo({
+                              ...cooperativeInfo,
+                              cooperativename: e.target.value,
+                            })
+                          }
+                        />
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Description *
+                        </p>
+                        <input
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          type="text"
+                          placeholder="Enter cooperative description"
+                          defaultValue={
+                            cooperativeInfo.description
+                          }
+                          required
+                          onChange={(e) =>
+                            setCooperativeInfo({
+                              ...cooperativeInfo,
+                              description: e.target.value,
+                            })
+                          }
+                        />
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Contact *
+                        </p>
+                        <input
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          type="text"
+                          placeholder="Enter cooperative contact"
+                          defaultValue={
+                            cooperativeInfo.contact
+                          }
+                          required
+                          onChange={(e) =>
+                            setCooperativeInfo({
+                              ...cooperativeInfo,
+                              contact: e.target.value,
                             })
                           }
                         />
                       </label>
                       <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Province *
+                          Location *
                         </p>
-                        <select defaultValue={
-                          locationInfo.Province
-                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setLocationInfo({ ...locationInfo, Province: e.target.value })
+                        <select required defaultValue={
+                          cooperativeInfo.locationid
+                        } className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
+                          (e) => setCooperativeInfo({ ...cooperativeInfo, locationid: e.target.value })
                         }>
                           <option value=""></option>
-                          {Provinces().map(el => <option key={el} value={el}>{el}</option>)}
-                        </select>
-                      </label>
-                      <label className="block mb-5">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          District *
-                        </p>
-                        <select defaultValue={
-                          locationInfo.District
-                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setLocationInfo({ ...locationInfo, District: e.target.value })
-                        }>
-                          <option value=""></option>
-                          {Districts(locationInfo.Province).map(el => <option key={el} value={el}>{el}</option>)}
-                        </select>
-                      </label>
-                      <label className="block mb-5">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Sector *
-                        </p>
-                        <select defaultValue={
-                          locationInfo.Sector
-                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setLocationInfo({ ...locationInfo, Sector: e.target.value })
-                        }>
-                          <option value=""></option>
-                          {Sectors(locationInfo.Province, locationInfo.District).map(el => <option key={el} value={el}>{el}</option>)}
-                        </select>
-                      </label>
-                      <label className="block mb-5">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Cell *
-                        </p>
-                        <select defaultValue={
-                          locationInfo.Cell
-                        } required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setLocationInfo({ ...locationInfo, Cell: e.target.value })
-                        }>
-                          <option value=""></option>
-                          {Cells(locationInfo.Province, locationInfo.District, locationInfo.Sector).map(el => <option key={el} value={el}>{el}</option>)}
+                          {locations.map(el => <option key={el.id} value={el.id}>{el.Location_name}</option>)}
                         </select>
                       </label>
                       <input type="submit" value="" hidden id='create' />
@@ -405,7 +407,7 @@ function Locations() {
                       </svg>
                     </div>
                     <div className="hidden font-bold sm:block">
-                      Add new location
+                      Add new cooperatives
                     </div>
                   </span>
                 </button>
@@ -446,7 +448,19 @@ function Locations() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Province/District/Sector/Cell
+                      Description
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Contact
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Location
                     </th>
                     <th
                       scope="col"
@@ -463,7 +477,7 @@ function Locations() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {locations.map((location) => (
+                  {cooperatives.map((cooperatives) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -477,17 +491,23 @@ function Locations() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {location.id}
+                        {cooperatives.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {location.Location_name}
+                        {cooperatives.cooperativename}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {`${location.Province}, ${location.District}, ${location.Sector}, ${location.Cell}`}
+                        {cooperatives.description}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {cooperatives.contact}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {cooperatives.locationid}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                         <a onClick={() => {
-                          setLocationInfo(location)
+                          setCooperativeInfo(cooperatives)
                           setShowModal({ modal: "edit", closed: false })
                         }} className="text-green-500 hover:text-green-700" href="#">
                           Edit
@@ -496,7 +516,7 @@ function Locations() {
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                         <a
                           onClick={() => {
-                            setLocationInfo(location);
+                            setCooperativeInfo(cooperatives);
                             setShowModal({ modal: "delete", closed: false })
                           }
                           }
@@ -517,4 +537,4 @@ function Locations() {
   )
 }
 
-export default Locations
+export default Cooperatives
