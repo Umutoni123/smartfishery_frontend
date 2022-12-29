@@ -2,7 +2,9 @@ import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import Cooperatives from './views/Cooperative';
 import Dashboard from './views/Dashboard';
+import FishDiseases from './views/FishDiseases';
 import FishPonds from './views/FishPonds';
+import FishTypes from './views/FishTypes';
 
 import Home from './views/Home'
 import Locations from './views/Locations';
@@ -30,6 +32,12 @@ const App = () => {
         </Route>
         <Route exact path="/cooperatives">
           <Dashboard children={<Cooperatives />} />
+        </Route>
+        <Route exact path="/fishtypes">
+          <Dashboard children={<FishTypes />} />
+        </Route>
+        <Route exact path="/fishdiseases">
+          <Dashboard children={<FishDiseases />} />
         </Route>
         <Route>
           <NotFound />

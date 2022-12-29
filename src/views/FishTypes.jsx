@@ -1,38 +1,38 @@
 import React from 'react'
 import Modal from '../components/Modal/Modal';
-import { selectFishPonds, setFishPonds } from '../store/modules/fishPondsSlice';
+import { selectFishTypes, setFishTypes } from '../store/modules/fishTypesSlice';
 import { useDispatch, useSelector } from "react-redux";
-import { selectLocations } from '../store/modules/locationSlice';
 import toast from 'react-hot-toast';
 import AppServices from "../services";
+import { selectCooperatives } from '../store/modules/cooperativeSlice';
 
-function FishPonds() {
-  const fishPonds = useSelector(selectFishPonds);
-  const locations = useSelector(selectLocations);
+function FishTypes() {
+  const fishTypes = useSelector(selectFishTypes);
+  const cooperatives = useSelector(selectCooperatives);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
   const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
-  const [fishPondInfo, setFishPondInfo] = React.useState({
-    Pond_name: "",
-    locationi: ""
+  const [fishTypeInfo, setFishTypeInfo] = React.useState({
+    fish_name: "",
+    // coopid: ""
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
     toast.promise(
-      AppServices.createItem('Fishponds', fishPondInfo),
+      AppServices.createItem('fishtypes', fishTypeInfo),
       {
-        loading: 'Creating fishPonds ...',
+        loading: 'Creating fishTypes ...',
         success: (response) => {
-          dispatch(setFishPonds(
+          dispatch(setFishTypes(
             [
-              ...fishPonds,
+              ...fishTypes,
               response.data.data
             ]
           ));
           closeModal();
-          return "FishPond created successfully";
+          return "FishType created successfully";
         },
         error: (error) => {
           const message =
@@ -50,18 +50,18 @@ function FishPonds() {
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`Fishponds/${fishPondInfo.Pond_Id}`, fishPondInfo),
+      AppServices.updateItem(`fishtypes/${fishTypeInfo.id}`, fishTypeInfo),
       {
-        loading: 'Editing fishPond ...',
+        loading: 'Editing fishType ...',
         success: (response) => {
-          dispatch(setFishPonds(
+          dispatch(setFishTypes(
             [
-              ...(fishPonds.filter((fishPonds) => fishPonds.Pond_Id !== fishPondInfo.Pond_Id)),
+              ...(fishTypes.filter((fishTypes) => fishTypes.id !== fishTypeInfo.id)),
               response.data.data
             ]
           ));
           closeModal();
-          return "FishPond edited successfully";
+          return "FishType edited successfully";
         },
         error: (error) => {
           const message =
@@ -79,17 +79,17 @@ function FishPonds() {
 
   const handleDelete = () => {
     toast.promise(
-      AppServices.deleteItem(`Fishponds/${fishPondInfo.Pond_Id}`),
+      AppServices.deleteItem(`fishtypes/${fishTypeInfo.id}`),
       {
-        loading: 'Deleting fishPond ...',
+        loading: 'Deleting fishType ...',
         success: (response) => {
-          dispatch(setFishPonds(
+          dispatch(setFishTypes(
             [
-              ...(fishPonds.filter((fishPonds) => fishPonds.Pond_Id !== fishPondInfo.Pond_Id)),
+              ...(fishTypes.filter((fishTypes) => fishTypes.id !== fishTypeInfo.id)),
             ]
           ));
           closeModal();
-          return "FishPond deleted successfully";
+          return "FishType deleted successfully";
         },
         error: (error) => {
           const message =
@@ -107,7 +107,7 @@ function FishPonds() {
 
   return (
     <div className='flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5'>
-      <h1 className='text-3xl font-bold'>Fish Ponds</h1>
+      <h1 className='text-3xl font-bold'>Fish Types</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -134,7 +134,7 @@ function FishPonds() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this fishPond, there is no going back.
+                    Once you delete this fishType, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -165,29 +165,29 @@ function FishPonds() {
                   }>
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Pond name *
+                          Name *
                         </p>
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           id="signInInput1-1"
                           onChange={
-                            (e) => setFishPondInfo({ ...fishPondInfo, Pond_name: e.target.value })
+                            (e) => setFishTypeInfo({ ...fishTypeInfo, fish_name: e.target.value })
                           }
                           type="text"
-                          placeholder="Enter pond name"
+                          placeholder="Enter name"
                         />
                       </label>
-                      <label className="block mb-5">
+                      {/* <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Location *
+                          Cooperative *
                         </p>
                         <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setFishPondInfo({ ...fishPondInfo, locationi: e.target.value })
+                          (e) => setFishTypeInfo({ ...fishTypeInfo, coopid: e.target.value })
                         }>
                           <option value=""></option>
-                          {locations.map(el => <option key={el.id} value={el.id}>{el.Location_name}</option>)}
+                          {cooperatives.map(el => <option key={el.id} value={el.id}>{el.cooperativename}</option>)}
                         </select>
-                      </label>
+                      </label> */}
                     <input type="submit" value="" hidden id='create' />
                   </form>
                 </div>
@@ -222,34 +222,34 @@ function FishPonds() {
                     }>
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Pond name *
+                          Name *
                         </p>
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           id="signInInput1-1"
                           defaultValue={
-                            fishPondInfo.Pond_name
+                            fishTypeInfo.fish_name
                           }
                           onChange={
-                            (e) => setFishPondInfo({ ...fishPondInfo, Pond_name: e.target.value })
+                            (e) => setFishTypeInfo({ ...fishTypeInfo, fish_name: e.target.value })
                           }
                           type="text"
-                          placeholder="Enter pond name"
+                          placeholder="Enter name"
                         />
                       </label>
-                      <label className="block mb-5">
+                      {/* <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Location *
+                          Cooperative *
                         </p>
                         <select required defaultValue={
-                          fishPondInfo.locationi
+                          fishTypeInfo.coopid
                         } className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setFishPondInfo({ ...fishPondInfo, locationi: e.target.value })
+                          (e) => setFishTypeInfo({ ...fishTypeInfo, coopid: e.target.value })
                         }>
                           <option value=""></option>
-                          {locations.map(el => <option key={el.id} value={el.id}>{el.Location_name}</option>)}
+                          {cooperatives.map(el => <option key={el.id} value={el.id}>{el.Cooperative_name}</option>)}
                         </select>
-                      </label>
+                      </label> */}
                       <input type="submit" value="" hidden id='create' />
                     </form>
                   </div>
@@ -325,7 +325,7 @@ function FishPonds() {
                       </svg>
                     </div>
                     <div className="hidden font-bold sm:block">
-                      Add new fish pond
+                      Add new fish type
                     </div>
                   </span>
                 </button>
@@ -354,20 +354,20 @@ function FishPonds() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Pond ID
+                      Type ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Pond Name
+                      Type Name
                     </th>
-                    <th
+                    {/* <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Location
-                    </th>
+                      Cooperative
+                    </th> */}
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
@@ -383,7 +383,7 @@ function FishPonds() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {fishPonds.map((fishPond) => (
+                  {fishTypes.map((fishType) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -397,17 +397,17 @@ function FishPonds() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishPond.Pond_Id}
+                        {fishType.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishPond.Pond_name}
+                        {fishType.fish_name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishPond.locationi}
-                      </td>
+                      {/* <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {fishType.coopid}
+                      </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                         <a onClick={() => {
-                          setFishPondInfo(fishPond)
+                          setFishTypeInfo(fishType)
                           setShowModal({ modal: "edit", closed: false })
                         }} className="text-green-500 hover:text-green-700" href="#">
                           Edit
@@ -416,7 +416,7 @@ function FishPonds() {
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                         <a
                           onClick={() => {
-                            setFishPondInfo(fishPond)
+                            setFishTypeInfo(fishType)
                             setShowModal({ modal: "delete", closed: false })
                           }
                           }
@@ -437,4 +437,4 @@ function FishPonds() {
   )
 }
 
-export default FishPonds
+export default FishTypes

@@ -13,6 +13,8 @@ import { useHistory } from "react-router-dom"
 import { setFishPonds } from '../store/modules/fishPondsSlice';
 import { setLocations } from '../store/modules/locationSlice';
 import { setCooperatives } from '../store/modules/cooperativeSlice';
+import { setFishTypes } from '../store/modules/fishTypesSlice';
+import { setFishDiseases } from '../store/modules/fishDiseasesSlice';
 
 function Dashboard({ children }) {
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -47,11 +49,16 @@ function Dashboard({ children }) {
           dispatch(setCooperatives(response.data.data));
         }
       });
-      // AppServices.getItems('samplinglocations').then((response) => {
-      //   if (response.data) {
-      //     dispatch(setSamplingLocations(Object.values(response.data)));
-      //   }
-      // });
+      AppServices.getItems('fishtypes').then((response) => {
+        if (response.data) {
+          dispatch(setFishTypes(response.data.data));
+        }
+      });
+      AppServices.getItems('Fishdiseases').then((response) => {
+        if (response.data) {
+          dispatch(setFishDiseases(response.data.data));
+        }
+      });
     }
   }, [loaded]);
 
