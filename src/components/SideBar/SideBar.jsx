@@ -14,7 +14,7 @@ function SideBar() {
     "Fish types",
     "Fish diseases",
     "User roles",
-    "Recommended treatment",
+    "Recommended treatments",
     "Permission",
     "Environment",
     "Product",

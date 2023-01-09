@@ -10,6 +10,7 @@ import Home from './views/Home'
 import Locations from './views/Locations';
 import Login from './views/Login';
 import NotFound from './views/NotFound'
+import RecommendedTreatments from './views/RecommendedTreatments';
 
 const App = () => {
   return (
@@ -38,6 +39,9 @@ const App = () => {
         </Route>
         <Route exact path="/fishdiseases">
           <Dashboard children={<FishDiseases />} />
+        </Route>
+        <Route exact path="/recommendedtreatments">
+          <Dashboard children={<RecommendedTreatments />} />
         </Route>
         <Route>
           <NotFound />

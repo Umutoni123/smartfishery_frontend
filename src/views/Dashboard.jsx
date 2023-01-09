@@ -15,6 +15,7 @@ import { setLocations } from '../store/modules/locationSlice';
 import { setCooperatives } from '../store/modules/cooperativeSlice';
 import { setFishTypes } from '../store/modules/fishTypesSlice';
 import { setFishDiseases } from '../store/modules/fishDiseasesSlice';
+import { setRecommendedTreatments } from '../store/modules/recommendedTreatmentsSlice';
 
 function Dashboard({ children }) {
   const isLoggedIn = useSelector(selectIsLoggedIn);
@@ -57,6 +58,11 @@ function Dashboard({ children }) {
       AppServices.getItems('Fishdiseases').then((response) => {
         if (response.data) {
           dispatch(setFishDiseases(response.data.data));
+        }
+      });
+      AppServices.getItems('recommended_treatment').then((response) => {
+        if (response.data) {
+          dispatch(setRecommendedTreatments(response.data.data));
         }
       });
     }

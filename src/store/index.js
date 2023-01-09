@@ -7,6 +7,7 @@ import fishPondsReducer from './modules/fishPondsSlice';
 import locationsReducer from './modules/locationSlice';
 import fishTypesReducer from './modules/fishTypesSlice';
 import fishDiseasesReducer from './modules/fishDiseasesSlice';
+import recommendedTreatmentsReducer from './modules/recommendedTreatmentsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     cooperatives: cooperativesReducer,
     fishTypes: fishTypesReducer,
     fishDiseases: fishDiseasesReducer,
+    recommendedTreatments: recommendedTreatmentsReducer,
   },
 })
