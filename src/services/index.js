@@ -6,60 +6,60 @@ export const API_URL =
 
 class AppServices {
   login(body) {
-    return axios.post(`${API_URL}/login`, body);
+    return axios.post(`/api/login`, body);
   }
 
   updateUser(body, id) {
-    return axios.put(`${API_URL}/users/${id}`, body);
+    return axios.put(`/api/users/${id}`, body);
   }
 
   getCurrentUser() {
-    return axios.get(`${API_URL}/user`);
+    return axios.get(`/api/user`);
   }
 
   register(body) {
-    return axios.post(`${API_URL}/users`, body);
+    return axios.post(`/api/users`, body);
   }
 
   deleteUser() {
-    return axios.delete(`${API_URL}/users`);
+    return axios.delete(`/api/users`);
   }
 
   getItems(path) {
-    return axios.get(`${API_URL}/${path}`);
+    return axios.get(`/api/${path}`);
   }
 
   createItem(path, body) {
-    return axios.post(`${API_URL}/${path}`, body);
+    return axios.post(`/api/${path}`, body);
   }
 
   updateItem(path, body) {
-    return axios.put(`${API_URL}/${path}`, body);
+    return axios.put(`/api/${path}`, body);
   }
 
   deleteItem(path) {
-    return axios.delete(`${API_URL}/${path}`);
+    return axios.delete(`/api/${path}`);
   }
 
 
   verifyAccount(id) {
-    return axios.post(`${API_URL}/verification/${id}`);
+    return axios.post(`/api/verification/${id}`);
   }
 
   updatePasswordReset(body) {
-    return axios.post(`${API_URL}/auth/updated-password-reset`, body);
+    return axios.post(`/api/auth/updated-password-reset`, body);
   }
 
   createPasswordReset(body) {
-    return axios.post(`${API_URL}/auth/create-password-reset`, body);
+    return axios.post(`/api/auth/create-password-reset`, body);
   }
 
   getPasswordReset(token) {
-    return axios.get(`${API_URL}/auth/${token}`);
+    return axios.get(`/api/auth/${token}`);
   }
 
   getUsers() {
-    return axios.get(`${API_URL}/users`);
+    return axios.get(`/api/users`);
   }
 
 }
