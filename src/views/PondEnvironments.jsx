@@ -1,62 +1,87 @@
 import React from "react";
 import Modal from "../components/Modal/Modal";
-import { selectFishTypes, setFishTypes } from "../store/modules/fishTypesSlice";
+import {
+  selectPondEnvironments,
+  setPondEnvironments,
+} from "../store/modules/pondEnvironmentsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import AppServices from "../services";
-import { selectCooperatives } from "../store/modules/cooperativeSlice";
+import {
+  selectFishTypes,
+  selectFishTypesDictionary,
+} from "../store/modules/fishTypesSlice";
+import {
+  selectFishPonds,
+  selectFishPondsDictionary,
+} from "../store/modules/fishPondsSlice";
 import { selectUser } from "../store/modules/authSlice";
 
-function FishTypes() {
+function PondEnvironmentss() {
+  const pondEnvironments = useSelector(selectPondEnvironments);
   const fishTypes = useSelector(selectFishTypes);
+  const fishTypesDict = useSelector(selectFishTypesDictionary);
+  const fishPonds = useSelector(selectFishPonds);
+  const fishPondsDict = useSelector(selectFishPondsDictionary);
   const user = useSelector(selectUser);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
   const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
-  const [fishTypeInfo, setFishTypeInfo] = React.useState({
-    fish_name: "",
-    // coopid: ""
+  const [pondEnvironmentInfo, setPondEnvironmentsInfo] = React.useState({
+    id: "",
+    temperature: "",
+    ph: "",
+    pond_id: "",
+    fish_type: "",
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    toast.promise(AppServices.createItem("fishtypes", fishTypeInfo), {
-      loading: "Creating fishTypes ...",
-      success: (response) => {
-        dispatch(setFishTypes([...fishTypes, response.data.data]));
-        closeModal();
-        return "FishType created successfully";
-      },
-      error: (error) => {
-        const message =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+    toast.promise(
+      AppServices.createItem("pond_environments", pondEnvironmentInfo),
+      {
+        loading: "Creating pondEnvironment ...",
+        success: (response) => {
+          dispatch(
+            setPondEnvironments([...pondEnvironments, response.data.data])
+          );
+          closeModal();
+          return "PondEnvironment created successfully";
+        },
+        error: (error) => {
+          const message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
 
-        return message;
-      },
-    });
+          return message;
+        },
+      }
+    );
   };
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`fishtypes/${fishTypeInfo.id}`, fishTypeInfo),
+      AppServices.updateItem(
+        `pond_environments/${pondEnvironmentInfo.id}`,
+        pondEnvironmentInfo
+      ),
       {
-        loading: "Editing fishType ...",
+        loading: "Editing pondEnvironment ...",
         success: (response) => {
           dispatch(
-            setFishTypes([
-              ...fishTypes.filter(
-                (fishTypes) => fishTypes.id !== fishTypeInfo.id
+            setPondEnvironments([
+              ...pondEnvironments.filter(
+                (el) => el.id !== pondEnvironmentInfo.id
               ),
               response.data.data,
             ])
           );
           closeModal();
-          return "FishType edited successfully";
+          return "PondEnvironments edited successfully";
         },
         error: (error) => {
           const message =
@@ -73,35 +98,39 @@ function FishTypes() {
   };
 
   const handleDelete = () => {
-    toast.promise(AppServices.deleteItem(`fishtypes/${fishTypeInfo.id}`), {
-      loading: "Deleting fishType ...",
-      success: (response) => {
-        dispatch(
-          setFishTypes([
-            ...fishTypes.filter(
-              (fishTypes) => fishTypes.id !== fishTypeInfo.id
-            ),
-          ])
-        );
-        closeModal();
-        return "FishType deleted successfully";
-      },
-      error: (error) => {
-        const message =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+    toast.promise(
+      AppServices.deleteItem(`pond_environments/${pondEnvironmentInfo.id}`),
+      {
+        loading: "Deleting pondEnvironment ...",
+        success: (response) => {
+          dispatch(
+            setPondEnvironments([
+              ...pondEnvironments.filter(
+                (pondEnvironments) =>
+                  pondEnvironments.id !== pondEnvironmentInfo.id
+              ),
+            ])
+          );
+          closeModal();
+          return "PondEnvironment deleted successfully";
+        },
+        error: (error) => {
+          const message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
 
-        return message;
-      },
-    });
+          return message;
+        },
+      }
+    );
   };
 
   return (
     <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
-      <h1 className="text-3xl font-bold">Fish Types</h1>
+      <h1 className="text-3xl font-bold">Pond Environments</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -128,7 +157,8 @@ function FishTypes() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this fishType, there is no going back.
+                    Once you delete this pondEnvironment, there is no going
+                    back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -158,20 +188,77 @@ function FishTypes() {
                   >
                     <label className="block mb-4">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Name *
+                        Temperature *
                       </p>
                       <input
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        id="signInInput1-1"
                         onChange={(e) =>
-                          setFishTypeInfo({
-                            ...fishTypeInfo,
-                            fish_name: e.target.value,
+                          setPondEnvironmentsInfo({
+                            ...pondEnvironmentInfo,
+                            temperature: e.target.value,
                           })
                         }
-                        type="text"
-                        placeholder="Enter name"
+                        type="number"
                       />
+                    </label>
+                    <label className="block mb-4">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        PH *
+                      </p>
+                      <input
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setPondEnvironmentsInfo({
+                            ...pondEnvironmentInfo,
+                            ph: e.target.value,
+                          })
+                        }
+                        type="number"
+                      />
+                    </label>
+                    <label className="block mb-4">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Fish pond *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setPondEnvironmentsInfo({
+                            ...pondEnvironmentInfo,
+                            pond_id: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {fishPonds.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block mb-4">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Fish type *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setPondEnvironmentsInfo({
+                            ...pondEnvironmentInfo,
+                            fish_type: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {fishTypes.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.fish_name}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                     <input type="submit" value="" hidden id="create" />
                   </form>
@@ -206,21 +293,81 @@ function FishTypes() {
                     >
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Name *
+                          Temperature *
                         </p>
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          id="signInInput1-1"
-                          defaultValue={fishTypeInfo.fish_name}
                           onChange={(e) =>
-                            setFishTypeInfo({
-                              ...fishTypeInfo,
-                              fish_name: e.target.value,
+                            setPondEnvironmentsInfo({
+                              ...pondEnvironmentInfo,
+                              temperature: e.target.value,
                             })
                           }
-                          type="text"
-                          placeholder="Enter name"
+                          defaultValue={pondEnvironmentInfo.temperature}
+                          type="number"
                         />
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          PH *
+                        </p>
+                        <input
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setPondEnvironmentsInfo({
+                              ...pondEnvironmentInfo,
+                              ph: e.target.value,
+                            })
+                          }
+                          defaultValue={pondEnvironmentInfo.ph}
+                          type="number"
+                        />
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Fish pond *
+                        </p>
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setPondEnvironmentsInfo({
+                              ...pondEnvironmentInfo,
+                              pond_id: e.target.value,
+                            })
+                          }
+                          defaultValue={pondEnvironmentInfo.pond_id}
+                        >
+                          <option value=""></option>
+                          {fishPonds.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Fish type *
+                        </p>
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          defaultValue={pondEnvironmentInfo.fish_type}
+                          onChange={(e) =>
+                            setPondEnvironmentsInfo({
+                              ...pondEnvironmentInfo,
+                              fish_type: e.target.value,
+                            })
+                          }
+                        >
+                          <option value=""></option>
+                          {fishTypes.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.fish_name}
+                            </option>
+                          ))}
+                        </select>
                       </label>
                       <input type="submit" value="" hidden id="create" />
                     </form>
@@ -299,7 +446,7 @@ function FishTypes() {
                           </svg>
                         </div>
                         <div className="hidden font-bold sm:block">
-                          Add new fish type
+                          Add new pond environment
                         </div>
                       </span>
                     </button>
@@ -330,13 +477,31 @@ function FishTypes() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Type ID
+                      Environment ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Type Name
+                      Temperature
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      PH
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Fish pond
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Fish type
                     </th>
                     {user?.type !== "rab" && (
                       <>
@@ -357,7 +522,7 @@ function FishTypes() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {fishTypes.map((fishType) => (
+                  {pondEnvironments.map((pondEnvironment) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -371,17 +536,26 @@ function FishTypes() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishType.id}
+                        {pondEnvironment.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishType.fish_name}
+                        {pondEnvironment.temperature}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {pondEnvironment.ph}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {fishPondsDict[pondEnvironment.pond_id]?.name}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {fishTypesDict[pondEnvironment.fish_type]?.fish_name}
                       </td>
                       {user?.type !== "rab" && (
                         <>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <a
                               onClick={() => {
-                                setFishTypeInfo(fishType);
+                                setPondEnvironmentsInfo(pondEnvironment);
                                 setShowModal({ modal: "edit", closed: false });
                               }}
                               className="text-green-500 hover:text-green-700"
@@ -393,7 +567,7 @@ function FishTypes() {
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <a
                               onClick={() => {
-                                setFishTypeInfo(fishType);
+                                setPondEnvironmentsInfo(pondEnvironment);
                                 setShowModal({
                                   modal: "delete",
                                   closed: false,
@@ -419,4 +593,4 @@ function FishTypes() {
   );
 }
 
-export default FishTypes;
+export default PondEnvironmentss;

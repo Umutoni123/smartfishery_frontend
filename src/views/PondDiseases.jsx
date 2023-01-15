@@ -1,32 +1,48 @@
 import React from "react";
 import Modal from "../components/Modal/Modal";
-import { selectFishTypes, setFishTypes } from "../store/modules/fishTypesSlice";
+import {
+  selectPondDiseases,
+  setPondDiseases,
+} from "../store/modules/pondDiseasesSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import AppServices from "../services";
-import { selectCooperatives } from "../store/modules/cooperativeSlice";
+import {
+  selectFishDiseases,
+  selectFishDiseasesDictionary,
+} from "../store/modules/fishDiseasesSlice";
+import {
+  selectFishPonds,
+  selectFishPondsDictionary,
+} from "../store/modules/fishPondsSlice";
 import { selectUser } from "../store/modules/authSlice";
 
-function FishTypes() {
-  const fishTypes = useSelector(selectFishTypes);
+function PondDiseases() {
+  const pondDiseases = useSelector(selectPondDiseases);
+  const fishDiseases = useSelector(selectFishDiseases);
+  const fishDiseasesDict = useSelector(selectFishDiseasesDictionary);
+  const fishPonds = useSelector(selectFishPonds);
+  const fishPondsDict = useSelector(selectFishPondsDictionary);
   const user = useSelector(selectUser);
+
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
   const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
-  const [fishTypeInfo, setFishTypeInfo] = React.useState({
-    fish_name: "",
-    // coopid: ""
+  const [pondDiseaseInfo, setPondDiseaseInfo] = React.useState({
+    pond_id: "",
+    fish_disease: "",
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    toast.promise(AppServices.createItem("fishtypes", fishTypeInfo), {
-      loading: "Creating fishTypes ...",
+    toast.promise(AppServices.createItem("pond_diseases", pondDiseaseInfo), {
+      loading: "Creating pondDisease ...",
       success: (response) => {
-        dispatch(setFishTypes([...fishTypes, response.data.data]));
+        // handle errors for unique fields
+        dispatch(setPondDiseases([...pondDiseases, response.data.data]));
         closeModal();
-        return "FishType created successfully";
+        return "PondDisease created successfully";
       },
       error: (error) => {
         const message =
@@ -43,20 +59,21 @@ function FishTypes() {
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`fishtypes/${fishTypeInfo.id}`, fishTypeInfo),
+      AppServices.updateItem(
+        `pond_diseases/${pondDiseaseInfo.id}`,
+        pondDiseaseInfo
+      ),
       {
-        loading: "Editing fishType ...",
+        loading: "Editing pondDisease ...",
         success: (response) => {
           dispatch(
-            setFishTypes([
-              ...fishTypes.filter(
-                (fishTypes) => fishTypes.id !== fishTypeInfo.id
-              ),
+            setPondDiseases([
+              ...pondDiseases.filter((el) => el.id !== pondDiseaseInfo.id),
               response.data.data,
             ])
           );
           closeModal();
-          return "FishType edited successfully";
+          return "PondDisease edited successfully";
         },
         error: (error) => {
           const message =
@@ -73,35 +90,38 @@ function FishTypes() {
   };
 
   const handleDelete = () => {
-    toast.promise(AppServices.deleteItem(`fishtypes/${fishTypeInfo.id}`), {
-      loading: "Deleting fishType ...",
-      success: (response) => {
-        dispatch(
-          setFishTypes([
-            ...fishTypes.filter(
-              (fishTypes) => fishTypes.id !== fishTypeInfo.id
-            ),
-          ])
-        );
-        closeModal();
-        return "FishType deleted successfully";
-      },
-      error: (error) => {
-        const message =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+    toast.promise(
+      AppServices.deleteItem(`pond_diseases/${pondDiseaseInfo.id}`),
+      {
+        loading: "Deleting pondDisease ...",
+        success: (response) => {
+          dispatch(
+            setPondDiseases([
+              ...pondDiseases.filter(
+                (pondDiseases) => pondDiseases.id !== pondDiseaseInfo.id
+              ),
+            ])
+          );
+          closeModal();
+          return "PondDisease deleted successfully";
+        },
+        error: (error) => {
+          const message =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
 
-        return message;
-      },
-    });
+          return message;
+        },
+      }
+    );
   };
 
   return (
     <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
-      <h1 className="text-3xl font-bold">Fish Types</h1>
+      <h1 className="text-3xl font-bold">Pond Diseases</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -128,7 +148,7 @@ function FishTypes() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this fishType, there is no going back.
+                    Once you delete this pondDisease, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -158,20 +178,47 @@ function FishTypes() {
                   >
                     <label className="block mb-4">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Name *
+                        Fish pond *
                       </p>
-                      <input
+                      <select
+                        required
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        id="signInInput1-1"
                         onChange={(e) =>
-                          setFishTypeInfo({
-                            ...fishTypeInfo,
-                            fish_name: e.target.value,
+                          setPondDiseaseInfo({
+                            ...pondDiseaseInfo,
+                            pond_id: e.target.value,
                           })
                         }
-                        type="text"
-                        placeholder="Enter name"
-                      />
+                      >
+                        <option value=""></option>
+                        {fishPonds.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block mb-4">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Disease *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setPondDiseaseInfo({
+                            ...pondDiseaseInfo,
+                            fish_disease: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {fishDiseases.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.name}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                     <input type="submit" value="" hidden id="create" />
                   </form>
@@ -206,21 +253,69 @@ function FishTypes() {
                     >
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Name *
+                          Fish pond *
                         </p>
-                        <input
+                        <select
+                          required
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          id="signInInput1-1"
-                          defaultValue={fishTypeInfo.fish_name}
                           onChange={(e) =>
-                            setFishTypeInfo({
-                              ...fishTypeInfo,
-                              fish_name: e.target.value,
+                            setPondDiseaseInfo({
+                              ...pondDiseaseInfo,
+                              pond_id: e.target.value,
                             })
                           }
-                          type="text"
-                          placeholder="Enter name"
-                        />
+                          defaultValue={pondDiseaseInfo.pond_id}
+                        >
+                          <option value=""></option>
+                          {fishPonds.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Disease *
+                        </p>
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setPondDiseaseInfo({
+                              ...pondDiseaseInfo,
+                              fish_disease: e.target.value,
+                            })
+                          }
+                          defaultValue={pondDiseaseInfo.fish_disease}
+                        >
+                          <option value=""></option>
+                          {fishDiseases.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="block mb-4">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Status *
+                        </p>
+
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setPondDiseaseInfo({
+                              ...pondDiseaseInfo,
+                              status: e.target.value,
+                            })
+                          }
+                          defaultValue={pondDiseaseInfo.status}
+                        >
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+                        </select>
                       </label>
                       <input type="submit" value="" hidden id="create" />
                     </form>
@@ -299,7 +394,7 @@ function FishTypes() {
                           </svg>
                         </div>
                         <div className="hidden font-bold sm:block">
-                          Add new fish type
+                          Add new pond disease
                         </div>
                       </span>
                     </button>
@@ -330,13 +425,25 @@ function FishTypes() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Type ID
+                      ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Type Name
+                      Pond
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Disease
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Status
                     </th>
                     {user?.type !== "rab" && (
                       <>
@@ -357,8 +464,8 @@ function FishTypes() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {fishTypes.map((fishType) => (
-                    <tr>
+                  {pondDiseases.map((pondDisease) => (
+                    <tr key={pondDisease.id}>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
                           <input
@@ -371,17 +478,23 @@ function FishTypes() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishType.id}
+                        {pondDisease.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishType.fish_name}
+                        {fishPondsDict[pondDisease.pond_id]?.name}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800">
+                        {fishDiseasesDict[pondDisease.fish_disease]?.name}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800">
+                        {pondDisease.status}
                       </td>
                       {user?.type !== "rab" && (
                         <>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <a
                               onClick={() => {
-                                setFishTypeInfo(fishType);
+                                setPondDiseaseInfo(pondDisease);
                                 setShowModal({ modal: "edit", closed: false });
                               }}
                               className="text-green-500 hover:text-green-700"
@@ -393,7 +506,7 @@ function FishTypes() {
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <a
                               onClick={() => {
-                                setFishTypeInfo(fishType);
+                                setPondDiseaseInfo(pondDisease);
                                 setShowModal({
                                   modal: "delete",
                                   closed: false,
@@ -419,4 +532,4 @@ function FishTypes() {
   );
 }
 
-export default FishTypes;
+export default PondDiseases;

@@ -1,65 +1,65 @@
-import React from 'react'
-import Modal from '../components/Modal/Modal';
-import { selectFishPonds, setFishPonds } from '../store/modules/fishPondsSlice';
+import React from "react";
+import Modal from "../components/Modal/Modal";
+import { selectFishPonds, setFishPonds } from "../store/modules/fishPondsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLocations } from '../store/modules/locationSlice';
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 import AppServices from "../services";
+import {
+  selectCooperatives,
+  selectCooperativesDictionary,
+} from "../store/modules/cooperativeSlice";
+import { selectUser } from "../store/modules/authSlice";
 
 function FishPonds() {
   const fishPonds = useSelector(selectFishPonds);
-  const locations = useSelector(selectLocations);
+  const cooperatives = useSelector(selectCooperatives);
+  const cooperativesDict = useSelector(selectCooperativesDictionary);
+  const user = useSelector(selectUser);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
   const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
   const [fishPondInfo, setFishPondInfo] = React.useState({
-    Pond_name: "",
-    locationi: ""
+    name: "",
+    cooperative_id: "",
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    toast.promise(
-      AppServices.createItem('Fishponds', fishPondInfo),
-      {
-        loading: 'Creating fishPonds ...',
-        success: (response) => {
-          dispatch(setFishPonds(
-            [
-              ...fishPonds,
-              response.data.data
-            ]
-          ));
-          closeModal();
-          return "FishPond created successfully";
-        },
-        error: (error) => {
-          const message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+    toast.promise(AppServices.createItem("fishponds", fishPondInfo), {
+      loading: "Creating fishPond ...",
+      success: (response) => {
+        dispatch(setFishPonds([...fishPonds, response.data.data]));
+        closeModal();
+        return "FishPond created successfully";
+      },
+      error: (error) => {
+        const message =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-          return message;
-        },
-      }
-    );
-  }
+        return message;
+      },
+    });
+  };
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`Fishponds/${fishPondInfo.Pond_Id}`, fishPondInfo),
+      AppServices.updateItem(`fishponds/${fishPondInfo.id}`, fishPondInfo),
       {
-        loading: 'Editing fishPond ...',
+        loading: "Editing fishPond ...",
         success: (response) => {
-          dispatch(setFishPonds(
-            [
-              ...(fishPonds.filter((fishPonds) => fishPonds.Pond_Id !== fishPondInfo.Pond_Id)),
-              response.data.data
-            ]
-          ));
+          dispatch(
+            setFishPonds([
+              ...fishPonds.filter(
+                (fishPonds) => fishPonds.id !== fishPondInfo.id
+              ),
+              response.data.data,
+            ])
+          );
           closeModal();
           return "FishPond edited successfully";
         },
@@ -75,39 +75,38 @@ function FishPonds() {
         },
       }
     );
-  }
+  };
 
   const handleDelete = () => {
-    toast.promise(
-      AppServices.deleteItem(`Fishponds/${fishPondInfo.Pond_Id}`),
-      {
-        loading: 'Deleting fishPond ...',
-        success: (response) => {
-          dispatch(setFishPonds(
-            [
-              ...(fishPonds.filter((fishPonds) => fishPonds.Pond_Id !== fishPondInfo.Pond_Id)),
-            ]
-          ));
-          closeModal();
-          return "FishPond deleted successfully";
-        },
-        error: (error) => {
-          const message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+    toast.promise(AppServices.deleteItem(`fishponds/${fishPondInfo.id}`), {
+      loading: "Deleting fishPond ...",
+      success: (response) => {
+        dispatch(
+          setFishPonds([
+            ...fishPonds.filter(
+              (fishPonds) => fishPonds.id !== fishPondInfo.id
+            ),
+          ])
+        );
+        closeModal();
+        return "FishPond deleted successfully";
+      },
+      error: (error) => {
+        const message =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-          return message;
-        },
-      }
-    );
-  }
+        return message;
+      },
+    });
+  };
 
   return (
-    <div className='flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5'>
-      <h1 className='text-3xl font-bold'>Fish Ponds</h1>
+    <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
+      <h1 className="text-3xl font-bold">Fish Ponds</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -145,9 +144,7 @@ function FishPonds() {
                     Cancel
                   </button>
                   <button
-                    onClick={
-                      handleDelete
-                    }
+                    onClick={handleDelete}
                     className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Yes, delete
@@ -157,38 +154,53 @@ function FishPonds() {
             ) : showModal.modal === "add" ? (
               <div className="max-w-xl mx-auto overflow-hidden bg-white px-7 rounded-xl">
                 <div className="flex flex-col items-start justify-center h-full py-7 bg-blueGray-100">
-                  <form className="mx-auto md:max-w-lg" onSubmit={
-                    (e) => {
+                  <form
+                    className="mx-auto md:max-w-lg"
+                    onSubmit={(e) => {
                       e.preventDefault();
                       handleSubmit();
-                    }
-                  }>
-                      <label className="block mb-4">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Pond name *
-                        </p>
-                        <input
-                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          id="signInInput1-1"
-                          onChange={
-                            (e) => setFishPondInfo({ ...fishPondInfo, Pond_name: e.target.value })
-                          }
-                          type="text"
-                          placeholder="Enter pond name"
-                        />
-                      </label>
-                      <label className="block mb-5">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Location *
-                        </p>
-                        <select required className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setFishPondInfo({ ...fishPondInfo, locationi: e.target.value })
-                        }>
-                          <option value=""></option>
-                          {locations.map(el => <option key={el.id} value={el.id}>{el.Location_name}</option>)}
-                        </select>
-                      </label>
-                    <input type="submit" value="" hidden id='create' />
+                    }}
+                  >
+                    <label className="block mb-4">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Pond name *
+                      </p>
+                      <input
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        id="signInInput1-1"
+                        onChange={(e) =>
+                          setFishPondInfo({
+                            ...fishPondInfo,
+                            name: e.target.value,
+                          })
+                        }
+                        type="text"
+                        placeholder="Enter pond name"
+                      />
+                    </label>
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Cooperative *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setFishPondInfo({
+                            ...fishPondInfo,
+                            cooperative_id: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {cooperatives.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <input type="submit" value="" hidden id="create" />
                   </form>
                 </div>
                 <div className="px-6 pt-1 pb-6 -mb-2 text-right bg-white">
@@ -199,11 +211,9 @@ function FishPonds() {
                     Cancel
                   </button>
                   <button
-                    onClick={
-                      () => {
-                        document.getElementById('create').click();
-                      }
-                    }
+                    onClick={() => {
+                      document.getElementById("create").click();
+                    }}
                     className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Add
@@ -214,12 +224,13 @@ function FishPonds() {
               showModal.modal === "edit" && (
                 <div className="max-w-xl mx-auto overflow-hidden bg-white px-7 rounded-xl">
                   <div className="flex flex-col items-start justify-center h-full py-7 bg-blueGray-100">
-                    <form className="mx-auto md:max-w-lg" onSubmit={
-                      (e) => {
+                    <form
+                      className="mx-auto md:max-w-lg"
+                      onSubmit={(e) => {
                         e.preventDefault();
                         handleEdit();
-                      }
-                    }>
+                      }}
+                    >
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
                           Pond name *
@@ -227,11 +238,12 @@ function FishPonds() {
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           id="signInInput1-1"
-                          defaultValue={
-                            fishPondInfo.Pond_name
-                          }
-                          onChange={
-                            (e) => setFishPondInfo({ ...fishPondInfo, Pond_name: e.target.value })
+                          defaultValue={fishPondInfo.name}
+                          onChange={(e) =>
+                            setFishPondInfo({
+                              ...fishPondInfo,
+                              name: e.target.value,
+                            })
                           }
                           type="text"
                           placeholder="Enter pond name"
@@ -239,18 +251,28 @@ function FishPonds() {
                       </label>
                       <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Location *
+                          Cooperative *
                         </p>
-                        <select required defaultValue={
-                          fishPondInfo.locationi
-                        } className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300" onChange={
-                          (e) => setFishPondInfo({ ...fishPondInfo, locationi: e.target.value })
-                        }>
+                        <select
+                          required
+                          defaultValue={fishPondInfo.cooperative_id}
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setFishPondInfo({
+                              ...fishPondInfo,
+                              cooperative_id: e.target.value,
+                            })
+                          }
+                        >
                           <option value=""></option>
-                          {locations.map(el => <option key={el.id} value={el.id}>{el.Location_name}</option>)}
+                          {cooperatives.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.name}
+                            </option>
+                          ))}
                         </select>
                       </label>
-                      <input type="submit" value="" hidden id='create' />
+                      <input type="submit" value="" hidden id="create" />
                     </form>
                   </div>
                   <div className="px-6 pt-1 pb-6 -mb-2 text-right bg-white">
@@ -261,11 +283,9 @@ function FishPonds() {
                       Cancel
                     </button>
                     <button
-                      onClick={
-                        () => {
-                          document.getElementById('create').click();
-                        }
-                      }
+                      onClick={() => {
+                        document.getElementById("create").click();
+                      }}
                       className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                     >
                       Save Changes
@@ -303,32 +323,36 @@ function FishPonds() {
 
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <button
-                  onClick={() => setShowModal({ modal: "add", closed: false })}
-                  className="relative z-0 inline-flex text-sm rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1"
-                >
-                  <span className="relative inline-flex items-center px-3 py-3 space-x-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md sm:py-2">
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="hidden font-bold sm:block">
-                      Add new fish pond
-                    </div>
-                  </span>
-                </button>
+                {user?.type !== "rab" && (
+                  <button
+                    onClick={() =>
+                      setShowModal({ modal: "add", closed: false })
+                    }
+                    className="relative z-0 inline-flex text-sm rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1"
+                  >
+                    <span className="relative inline-flex items-center px-3 py-3 space-x-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md sm:py-2">
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div className="hidden font-bold sm:block">
+                        Add new fish pond
+                      </div>
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -366,25 +390,29 @@ function FishPonds() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Location
+                      Cooperative
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
-                    >
-                      Edit
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
-                    >
-                      Delete
-                    </th>
+                    {user?.type !== "rab" && (
+                      <>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
+                        >
+                          Edit
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
+                        >
+                          Delete
+                        </th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {fishPonds.map((fishPond) => (
-                    <tr>
+                    <tr key={fishPond.id}>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
                           <input
@@ -397,36 +425,47 @@ function FishPonds() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishPond.Pond_Id}
+                        {fishPond.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishPond.Pond_name}
+                        {fishPond.name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishPond.locationi}
+                        {cooperativesDict[fishPond.cooperative_id]?.name}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                        <a onClick={() => {
-                          setFishPondInfo(fishPond)
-                          setShowModal({ modal: "edit", closed: false })
-                        }} className="text-green-500 hover:text-green-700" href="#">
-                          Edit
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                        <a
-                          onClick={() => {
-                            setFishPondInfo(fishPond)
-                            setShowModal({ modal: "delete", closed: false })
-                          }
-                          }
-                          className="text-red-500 hover:text-red-700"
-                          href="#"
-                        >
-                          Delete
-                        </a>
-                      </td>
-                    </tr>))}
+                      {user?.type !== "rab" && (
+                        <>
+                          <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a
+                              onClick={() => {
+                                setFishPondInfo(fishPond);
+                                setShowModal({ modal: "edit", closed: false });
+                              }}
+                              className="text-green-500 hover:text-green-700"
+                              href="#"
+                            >
+                              Edit
+                            </a>
+                          </td>
+                          <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a
+                              onClick={() => {
+                                setFishPondInfo(fishPond);
+                                setShowModal({
+                                  modal: "delete",
+                                  closed: false,
+                                });
+                              }}
+                              className="text-red-500 hover:text-red-700"
+                              href="#"
+                            >
+                              Delete
+                            </a>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -434,7 +473,7 @@ function FishPonds() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default FishPonds
+export default FishPonds;

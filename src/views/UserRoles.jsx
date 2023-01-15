@@ -1,66 +1,69 @@
 import React from 'react'
 import Modal from '../components/Modal/Modal';
-import { selectRecommendedTreatments, setRecommendedTreatments } from '../store/modules/recommendedTreatmentsSlice';
+import { selectUserRoles, setUserRoles } from '../store/modules/userRolesSlice';
 import { useDispatch, useSelector } from "react-redux";
 import toast from 'react-hot-toast';
 import AppServices from "../services";
+import { selectCooperatives, selectCooperativesDictionary } from '../store/modules/cooperativeSlice';
+import { selectUsers, selectUsersDictionary } from '../store/modules/usersSlice';
+import { selectLocations, selectLocationsDictionary } from '../store/modules/locationSlice';
 
-function RecommendedTreatments() {
-  const recommendedTreatments = useSelector(selectRecommendedTreatments);
+function UserRoles() {
+  const userRoles = useSelector(selectUserRoles);
+  const users = useSelector(selectUsers);
+  const usersDict = useSelector(selectUsersDictionary);
+  const locations = useSelector(selectLocations);
+  const locationsDict = useSelector(selectLocationsDictionary);
+  const cooperatives = useSelector(selectCooperatives);
+  const cooperativesDict = useSelector(selectCooperativesDictionary);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
   const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
-  const [recommendedTreatmentInfo, setRecommendedTreatmentInfo] = React.useState({
-    treatment_name: "",
-    details: "",
-    medications: "",
+  const [userRoleInfo, setUserRoleInfo] = React.useState({
+    user_id: "",
+    location_id: "",
+    cooperative_id: "",
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    toast.promise(
-      AppServices.createItem('recommended_treatment', recommendedTreatmentInfo),
-      {
-        loading: 'Creating recommendedTreatments ...',
-        success: (response) => {
-          dispatch(setRecommendedTreatments(
-            [
-              ...recommendedTreatments,
-              response.data.data
-            ]
-          ));
-          closeModal();
-          return "RecommendedTreatment created successfully";
-        },
-        error: (error) => {
-          const message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+    toast.promise(AppServices.createItem("user_roles", userRoleInfo), {
+      loading: "Creating userRole ...",
+      success: (response) => {
+        dispatch(setUserRoles([...userRoles, response.data.data]));
+        closeModal();
+        return "UserRole created successfully";
+      },
+      error: (error) => {
+        const message =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-          return message;
-        },
-      }
-    );
-  }
+        return message;
+      },
+    });
+  };
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`recommended_treatment/${recommendedTreatmentInfo.treat_Id}`, recommendedTreatmentInfo),
+      AppServices.updateItem(`user_roles/${userRoleInfo.id}`, userRoleInfo),
       {
-        loading: 'Editing recommendedTreatment ...',
+        loading: "Editing userRole ...",
         success: (response) => {
-          dispatch(setRecommendedTreatments(
-            [
-              ...(recommendedTreatments.filter((el) => el.treat_Id !== recommendedTreatmentInfo.treat_Id)),
-              response.data.data
-            ]
-          ));
+          dispatch(
+            setUserRoles([
+              ...userRoles.filter(
+                (userRoles) => userRoles.id !== userRoleInfo.id
+              ),
+              response.data.data,
+            ])
+          );
           closeModal();
-          return "RecommendedTreatment edited successfully";
+          return "UserRole edited successfully";
         },
         error: (error) => {
           const message =
@@ -74,39 +77,38 @@ function RecommendedTreatments() {
         },
       }
     );
-  }
+  };
 
   const handleDelete = () => {
-    toast.promise(
-      AppServices.deleteItem(`recommended_treatment/${recommendedTreatmentInfo.treat_Id}`),
-      {
-        loading: 'Deleting recommendedTreatment ...',
-        success: (response) => {
-          dispatch(setRecommendedTreatments(
-            [
-              ...(recommendedTreatments.filter((recommendedTreatments) => recommendedTreatments.treat_Id !== recommendedTreatmentInfo.treat_Id)),
-            ]
-          ));
-          closeModal();
-          return "RecommendedTreatment deleted successfully";
-        },
-        error: (error) => {
-          const message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+    toast.promise(AppServices.deleteItem(`user_roles/${userRoleInfo.id}`), {
+      loading: "Deleting userRole ...",
+      success: (response) => {
+        dispatch(
+          setUserRoles([
+            ...userRoles.filter(
+              (userRoles) => userRoles.id !== userRoleInfo.id
+            ),
+          ])
+        );
+        closeModal();
+        return "UserRole deleted successfully";
+      },
+      error: (error) => {
+        const message =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-          return message;
-        },
-      }
-    );
-  }
+        return message;
+      },
+    });
+  };
 
   return (
-    <div className='flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5'>
-      <h1 className='text-3xl font-bold'>Recommended Treatments</h1>
+    <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
+      <h1 className="text-3xl font-bold">Fish Ponds</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -133,7 +135,7 @@ function RecommendedTreatments() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this recommendedTreatment, there is no going back.
+                    Once you delete this userRole, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -144,9 +146,7 @@ function RecommendedTreatments() {
                     Cancel
                   </button>
                   <button
-                    onClick={
-                      handleDelete
-                    }
+                    onClick={handleDelete}
                     className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Yes, delete
@@ -156,52 +156,80 @@ function RecommendedTreatments() {
             ) : showModal.modal === "add" ? (
               <div className="max-w-xl mx-auto overflow-hidden bg-white px-7 rounded-xl">
                 <div className="flex flex-col items-start justify-center h-full py-7 bg-blueGray-100">
-                  <form className="mx-auto md:max-w-lg" onSubmit={
-                    (e) => {
+                  <form
+                    className="mx-auto md:max-w-lg"
+                    onSubmit={(e) => {
                       e.preventDefault();
                       handleSubmit();
-                    }
-                  }>
-                      <label className="block mb-4">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Name *
-                        </p>
-                        <input
-                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          onChange={
-                            (e) => setRecommendedTreatmentInfo({ ...recommendedTreatmentInfo, treatment_name: e.target.value })
-                          }
-                          type="text"
-                          placeholder="Enter treatment name"
-                        />
-                      </label>
-                      <label className="block mb-4">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Details *
-                        </p>
-                        <input
-                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          onChange={
-                            (e) => setRecommendedTreatmentInfo({ ...recommendedTreatmentInfo, details: e.target.value })
-                          }
-                          type="text"
-                          placeholder="Enter treatment details"
-                        />
-                      </label>
-                      <label className="block mb-4">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Medications *
-                        </p>
-                        <input
-                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          onChange={
-                            (e) => setRecommendedTreatmentInfo({ ...recommendedTreatmentInfo, medications: e.target.value })
-                          }
-                          type="text"
-                          placeholder="Enter treatment medications"
-                        />
-                      </label>
-                    <input type="submit" value="" hidden id='create' />
+                    }}
+                  >
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        User *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setUserRoleInfo({
+                            ...userRoleInfo,
+                            user_id: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {users.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.full_name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Location *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setUserRoleInfo({
+                            ...userRoleInfo,
+                            location_id: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {locations.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.location_name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Cooperative *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setUserRoleInfo({
+                            ...userRoleInfo,
+                            cooperative_id: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {cooperatives.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <input type="submit" value="" hidden id="create" />
                   </form>
                 </div>
                 <div className="px-6 pt-1 pb-6 -mb-2 text-right bg-white">
@@ -212,11 +240,9 @@ function RecommendedTreatments() {
                     Cancel
                   </button>
                   <button
-                    onClick={
-                      () => {
-                        document.getElementById('create').click();
-                      }
-                    }
+                    onClick={() => {
+                      document.getElementById("create").click();
+                    }}
                     className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Add
@@ -227,61 +253,83 @@ function RecommendedTreatments() {
               showModal.modal === "edit" && (
                 <div className="max-w-xl mx-auto overflow-hidden bg-white px-7 rounded-xl">
                   <div className="flex flex-col items-start justify-center h-full py-7 bg-blueGray-100">
-                    <form className="mx-auto md:max-w-lg" onSubmit={
-                      (e) => {
+                    <form
+                      className="mx-auto md:max-w-lg"
+                      onSubmit={(e) => {
                         e.preventDefault();
                         handleEdit();
-                      }
-                    }>
-                          <label className="block mb-4">
-                            <p className="mb-2 font-semibold leading-normal text-gray-900">
-                              Name *
-                            </p>
-                            <input
-                              className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                              defaultValue={
-                                recommendedTreatmentInfo.treatment_name
-                              }
-                              onChange={
-                                (e) => setRecommendedTreatmentInfo({ ...recommendedTreatmentInfo, treatment_name: e.target.value })
-                              }
-                              type="text"
-                              placeholder="Enter treatment name"
-                            />
-                          </label>
-                          <label className="block mb-4">
-                            <p className="mb-2 font-semibold leading-normal text-gray-900">
-                              Details *
-                            </p>
-                            <input
-                              className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                              defaultValue={
-                                recommendedTreatmentInfo.details
-                              }
-                              onChange={
-                                (e) => setRecommendedTreatmentInfo({ ...recommendedTreatmentInfo, details: e.target.value })
-                              }
-                              type="text"
-                              placeholder="Enter treatment details"
-                            />
-                          </label>
-                          <label className="block mb-4">
-                            <p className="mb-2 font-semibold leading-normal text-gray-900">
-                              Medications *
-                            </p>
-                            <input
-                              className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                              defaultValue={
-                                recommendedTreatmentInfo.medications
-                              }
-                              onChange={
-                                (e) => setRecommendedTreatmentInfo({ ...recommendedTreatmentInfo, medications: e.target.value })
-                              }
-                              type="text"
-                              placeholder="Enter treatment medications"
-                            />
-                          </label>
-                      <input type="submit" value="" hidden id='create' />
+                      }}
+                    >
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          User *
+                        </p>
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setUserRoleInfo({
+                              ...userRoleInfo,
+                              user_id: e.target.value,
+                            })
+                          }
+                          defaultValue={userRoleInfo.user_id}
+                        >
+                          <option value=""></option>
+                          {users.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.full_name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Location *
+                        </p>
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setUserRoleInfo({
+                              ...userRoleInfo,
+                              location_id: e.target.value,
+                            })
+                          }
+                          defaultValue={userRoleInfo.location_id}
+                        >
+                          <option value=""></option>
+                          {locations.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.location_name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Cooperative *
+                        </p>
+                        <select
+                          required
+                          defaultValue={userRoleInfo.cooperative_id}
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setUserRoleInfo({
+                              ...userRoleInfo,
+                              cooperative_id: e.target.value,
+                            })
+                          }
+                        >
+                          <option value=""></option>
+                          {cooperatives.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <input type="submit" value="" hidden id="create" />
                     </form>
                   </div>
                   <div className="px-6 pt-1 pb-6 -mb-2 text-right bg-white">
@@ -292,11 +340,9 @@ function RecommendedTreatments() {
                       Cancel
                     </button>
                     <button
-                      onClick={
-                        () => {
-                          document.getElementById('create').click();
-                        }
-                      }
+                      onClick={() => {
+                        document.getElementById("create").click();
+                      }}
                       className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                     >
                       Save Changes
@@ -356,7 +402,7 @@ function RecommendedTreatments() {
                       </svg>
                     </div>
                     <div className="hidden font-bold sm:block">
-                      Add new recommended treatment
+                      Add new user role
                     </div>
                   </span>
                 </button>
@@ -385,25 +431,25 @@ function RecommendedTreatments() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Treatment ID
+                      Role ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Treatment Name
+                      User
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Details
+                      Location
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Medications
+                      Cooperative
                     </th>
                     <th
                       scope="col"
@@ -420,7 +466,7 @@ function RecommendedTreatments() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {recommendedTreatments.map((recommendedTreatment) => (
+                  {userRoles.map((userRole) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -434,39 +480,43 @@ function RecommendedTreatments() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {recommendedTreatment.treat_Id}
+                        {userRole.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {recommendedTreatment.treatment_name}
+                        {usersDict[userRole.user_id]?.full_name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {recommendedTreatment.details}
+                        {locationsDict[userRole.location_id]?.location_name}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {recommendedTreatment.medications}
+                        {cooperativesDict[userRole.cooperative_id]?.name}
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                        <a onClick={() => {
-                          setRecommendedTreatmentInfo(recommendedTreatment)
-                          setShowModal({ modal: "edit", closed: false })
-                        }} className="text-green-500 hover:text-green-700" href="#">
+                        <a
+                          onClick={() => {
+                            setUserRoleInfo(userRole);
+                            setShowModal({ modal: "edit", closed: false });
+                          }}
+                          className="text-green-500 hover:text-green-700"
+                          href="#"
+                        >
                           Edit
                         </a>
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                         <a
                           onClick={() => {
-                            setRecommendedTreatmentInfo(recommendedTreatment)
-                            setShowModal({ modal: "delete", closed: false })
-                          }
-                          }
+                            setUserRoleInfo(userRole);
+                            setShowModal({ modal: "delete", closed: false });
+                          }}
                           className="text-red-500 hover:text-red-700"
                           href="#"
                         >
                           Delete
                         </a>
                       </td>
-                    </tr>))}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -474,7 +524,7 @@ function RecommendedTreatments() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default RecommendedTreatments
+export default UserRoles

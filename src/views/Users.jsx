@@ -1,37 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import Modal from "../components/Modal/Modal";
-import {
-  selectFishDiseases,
-  setFishDiseases,
-} from "../store/modules/fishDiseasesSlice";
+import { selectUsers, setUsers } from "../store/modules/usersSlice";
 import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
 import AppServices from "../services";
-import { selectUser } from "../store/modules/authSlice";
+import toast from "react-hot-toast";
 
-function FishDiseases() {
-  const fishDiseases = useSelector(selectFishDiseases);
-  const user = useSelector(selectUser);
+function Users() {
+  const users = useSelector(selectUsers);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
-  const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
-  const [fishDiseaseInfo, setFishDiseaseInfo] = React.useState({
-    name: "",
-    symptoms: "",
-    medication: "",
-    medication_details: "",
+  const [showModal, setShowModal] = useState({ modal: "", closed: true });
+  const [userInfo, setUserInfo] = React.useState({
+    full_name: "",
+    email: "",
+    phone_number: "",
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    toast.promise(AppServices.createItem("fishdiseases", fishDiseaseInfo), {
-      loading: "Creating fishDiseases ...",
+    toast.promise(AppServices.createItem("users", userInfo), {
+      loading: "Creating user ...",
       success: (response) => {
-        // handle errors for unique fields
-        dispatch(setFishDiseases([...fishDiseases, response.data.data]));
+        dispatch(setUsers([...users, response.data.data]));
         closeModal();
-        return "FishDisease created successfully";
+        return "User created successfully";
       },
       error: (error) => {
         const message =
@@ -47,70 +40,57 @@ function FishDiseases() {
   };
 
   const handleEdit = () => {
-    toast.promise(
-      AppServices.updateItem(
-        `fishdiseases/${fishDiseaseInfo.id}`,
-        fishDiseaseInfo
-      ),
-      {
-        loading: "Editing fishDisease ...",
-        success: (response) => {
-          dispatch(
-            setFishDiseases([
-              ...fishDiseases.filter((el) => el.id !== fishDiseaseInfo.id),
-              response.data.data,
-            ])
-          );
-          closeModal();
-          return "FishDisease edited successfully";
-        },
-        error: (error) => {
-          const message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+    toast.promise(AppServices.updateItem(`users/${userInfo.id}`, userInfo), {
+      loading: "Editing user ...",
+      success: (response) => {
+        dispatch(
+          setUsers([
+            ...users.filter((user) => user.id !== userInfo.id),
+            response.data.data,
+          ])
+        );
+        closeModal();
+        return "User edited successfully";
+      },
+      error: (error) => {
+        const message =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-          return message;
-        },
-      }
-    );
+        return message;
+      },
+    });
   };
 
   const handleDelete = () => {
-    toast.promise(
-      AppServices.deleteItem(`fishdiseases/${fishDiseaseInfo.id}`),
-      {
-        loading: "Deleting fishDisease ...",
-        success: (response) => {
-          dispatch(
-            setFishDiseases([
-              ...fishDiseases.filter(
-                (fishDiseases) => fishDiseases.id !== fishDiseaseInfo.id
-              ),
-            ])
-          );
-          closeModal();
-          return "FishDisease deleted successfully";
-        },
-        error: (error) => {
-          const message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+    toast.promise(AppServices.deleteItem(`users/${userInfo.id}`), {
+      loading: "Deleting user ...",
+      success: (response) => {
+        dispatch(
+          setUsers([...users.filter((user) => user.id !== userInfo.id)])
+        );
+        closeModal();
+        return "User deleted successfully";
+      },
+      error: (error) => {
+        const message =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-          return message;
-        },
-      }
-    );
+        return message;
+      },
+    });
   };
 
   return (
     <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
-      <h1 className="text-3xl font-bold">Fish Diseases</h1>
+      <h1 className="text-3xl font-bold">Fish Users</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -137,7 +117,7 @@ function FishDiseases() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this fishDisease, there is no going back.
+                    Once you delete this user, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -167,63 +147,60 @@ function FishDiseases() {
                   >
                     <label className="block mb-4">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Disease name*
+                        Full name *
                       </p>
                       <input
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        id="signInInput1-1"
+                        type="text"
+                        required
                         onChange={(e) =>
-                          setFishDiseaseInfo({
-                            ...fishDiseaseInfo,
-                            name: e.target.value,
+                          setUserInfo({
+                            ...userInfo,
+                            full_name: e.target.value,
+                          })
+                        }
+                      />
+                    </label>
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Email *
+                      </p>
+                      <input
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setUserInfo({ ...userInfo, email: e.target.value })
+                        }
+                        type="email"
+                      />
+                    </label>
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Phone number *
+                      </p>
+                      <input
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setUserInfo({
+                            ...userInfo,
+                            phone_number: e.target.value,
                           })
                         }
                         type="text"
                       />
                     </label>
-                    <label className="block mb-4">
+                    <label className="block mb-5">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Symptoms *
+                        Password *
                       </p>
-                      <textarea
+                      <input
+                        required
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                         onChange={(e) =>
-                          setFishDiseaseInfo({
-                            ...fishDiseaseInfo,
-                            symptoms: e.target.value,
-                          })
+                          setUserInfo({ ...userInfo, password: e.target.value })
                         }
-                        type="text"
-                      />
-                    </label>
-                    <label className="block mb-4">
-                      <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Medications *
-                      </p>
-                      <textarea
-                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        onChange={(e) =>
-                          setFishDiseaseInfo({
-                            ...fishDiseaseInfo,
-                            medication: e.target.value,
-                          })
-                        }
-                        type="text"
-                      />
-                    </label>
-                    <label className="block mb-4">
-                      <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Medications instructions*
-                      </p>
-                      <textarea
-                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        onChange={(e) =>
-                          setFishDiseaseInfo({
-                            ...fishDiseaseInfo,
-                            medication_details: e.target.value,
-                          })
-                        }
-                        type="text"
+                        type="password"
                       />
                     </label>
                     <input type="submit" value="" hidden id="create" />
@@ -237,10 +214,10 @@ function FishDiseases() {
                     Cancel
                   </button>
                   <button
+                    className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                     onClick={() => {
                       document.getElementById("create").click();
                     }}
-                    className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Add
                   </button>
@@ -259,68 +236,66 @@ function FishDiseases() {
                     >
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Disease *
+                          Full name *
                         </p>
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          id="signInInput1-1"
-                          defaultValue={fishDiseaseInfo.name}
+                          type="text"
+                          defaultValue={userInfo.full_name}
+                          required
                           onChange={(e) =>
-                            setFishDiseaseInfo({
-                              ...fishDiseaseInfo,
-                              name: e.target.value,
+                            setUserInfo({
+                              ...userInfo,
+                              full_name: e.target.value,
                             })
                           }
-                          type="text"
-                          placeholder="Enter disease"
                         />
                       </label>
-                      <label className="block mb-4">
+                      <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Symptoms *
+                          Email *
                         </p>
-                        <textarea
+                        <input
+                          required
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           onChange={(e) =>
-                            setFishDiseaseInfo({
-                              ...fishDiseaseInfo,
-                              symptoms: e.target.value,
-                            })
+                            setUserInfo({ ...userInfo, email: e.target.value })
                           }
-                          defaultValue={fishDiseaseInfo.symptoms}
-                          type="text"
+                          type="email"
+                          defaultValue={userInfo.email}
                         />
                       </label>
-                      <label className="block mb-4">
+                      <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Medications *
+                          Phone number *
                         </p>
-                        <textarea
+                        <input
+                          required
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           onChange={(e) =>
-                            setFishDiseaseInfo({
-                              ...fishDiseaseInfo,
-                              medication: e.target.value,
+                            setUserInfo({
+                              ...userInfo,
+                              phone_number: e.target.value,
                             })
                           }
-                          defaultValue={fishDiseaseInfo.medication}
                           type="text"
+                          defaultValue={userInfo.phone_number}
                         />
                       </label>
-                      <label className="block mb-4">
+                      <label className="block mb-5">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Medications instructions*
+                          Password
                         </p>
-                        <textarea
+                        <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          onChange={(e) =>
-                            setFishDiseaseInfo({
-                              ...fishDiseaseInfo,
-                              medication_details: e.target.value,
-                            })
-                          }
-                          defaultValue={fishDiseaseInfo.medication_details}
-                          type="text"
+                          onChange={(e) => {
+                            if (e.target.value !== "")
+                              setUserInfo({
+                                ...userInfo,
+                                password: e.target.value,
+                              });
+                          }}
+                          type="password"
                         />
                       </label>
                       <input type="submit" value="" hidden id="create" />
@@ -334,12 +309,12 @@ function FishDiseases() {
                       Cancel
                     </button>
                     <button
+                      className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                       onClick={() => {
                         document.getElementById("create").click();
                       }}
-                      className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                     >
-                      Save Changes
+                      Save
                     </button>
                   </div>
                 </div>
@@ -374,38 +349,32 @@ function FishDiseases() {
 
             <div className="flex items-center space-x-2">
               <div className="relative">
-                {user?.type !== "rab" && (
-                  <>
-                    <button
-                      onClick={() =>
-                        setShowModal({ modal: "add", closed: false })
-                      }
-                      className="relative z-0 inline-flex text-sm rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1"
-                    >
-                      <span className="relative inline-flex items-center px-3 py-3 space-x-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md sm:py-2">
-                        <div>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-6 h-6"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                        </div>
-                        <div className="hidden font-bold sm:block">
-                          Add new fish disease
-                        </div>
-                      </span>
-                    </button>
-                  </>
-                )}
+                <button
+                  onClick={() => setShowModal({ modal: "add", closed: false })}
+                  className="relative z-0 inline-flex text-sm rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1"
+                >
+                  <span className="relative inline-flex items-center px-3 py-3 space-x-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md sm:py-2">
+                    <div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="hidden font-bold sm:block">
+                      Add new user
+                    </div>
+                  </span>
+                </button>
               </div>
             </div>
           </div>
@@ -431,52 +400,42 @@ function FishDiseases() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Disease ID
+                      User ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Disease name
+                      Full name
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Symptoms
+                      Phone number
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Medication
+                      Email
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                      className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
                     >
-                      Medication instructions
+                      Edit
                     </th>
-                    {user?.type !== "rab" && (
-                      <>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
-                        >
-                          Edit
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
-                        >
-                          Delete
-                        </th>
-                      </>
-                    )}
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-right text-gray-500 uppercase "
+                    >
+                      Delete
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {fishDiseases.map((fishDisease) => (
+                  {users.map((user) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -490,51 +449,41 @@ function FishDiseases() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishDisease.id}
+                        {user.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishDisease.name}
+                        {user.full_name}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800">
-                        {fishDisease.symptoms}
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {user.phone_number}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800">
-                        {fishDisease.medication}
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {user.email}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800">
-                        {fishDisease.medication_details}
+                      <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                        <a
+                          onClick={() => {
+                            setUserInfo(user);
+                            setShowModal({ modal: "edit", closed: false });
+                          }}
+                          className="text-green-500 hover:text-green-700"
+                          href="#"
+                        >
+                          Edit
+                        </a>
                       </td>
-                      {user?.type !== "rab" && (
-                        <>
-                          <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                            <a
-                              onClick={() => {
-                                setFishDiseaseInfo(fishDisease);
-                                setShowModal({ modal: "edit", closed: false });
-                              }}
-                              className="text-green-500 hover:text-green-700"
-                              href="#"
-                            >
-                              Edit
-                            </a>
-                          </td>
-                          <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                            <a
-                              onClick={() => {
-                                setFishDiseaseInfo(fishDisease);
-                                setShowModal({
-                                  modal: "delete",
-                                  closed: false,
-                                });
-                              }}
-                              className="text-red-500 hover:text-red-700"
-                              href="#"
-                            >
-                              Delete
-                            </a>
-                          </td>
-                        </>
-                      )}
+                      <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                        <a
+                          onClick={() => {
+                            setUserInfo(user);
+                            setShowModal({ modal: "delete", closed: false });
+                          }}
+                          className="text-red-500 hover:text-red-700"
+                          href="#"
+                        >
+                          Delete
+                        </a>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -547,4 +496,4 @@ function FishDiseases() {
   );
 }
 
-export default FishDiseases;
+export default Users;

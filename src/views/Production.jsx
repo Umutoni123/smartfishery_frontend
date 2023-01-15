@@ -1,32 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import Modal from "../components/Modal/Modal";
-import { selectFishTypes, setFishTypes } from "../store/modules/fishTypesSlice";
+import {
+  selectProduction,
+  setProduction,
+} from "../store/modules/productionSlice";
 import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
 import AppServices from "../services";
-import { selectCooperatives } from "../store/modules/cooperativeSlice";
+import toast from "react-hot-toast";
+import { selectPondEnvironments } from "../store/modules/pondEnvironmentsSlice";
 import { selectUser } from "../store/modules/authSlice";
 
-function FishTypes() {
-  const fishTypes = useSelector(selectFishTypes);
+function Production() {
+  const productions = useSelector(selectProduction);
+  const environments = useSelector(selectPondEnvironments);
   const user = useSelector(selectUser);
   const closeModal = () => {
     setShowModal({ modal: "", closed: true });
   };
-  const [showModal, setShowModal] = React.useState({ modal: "", closed: true });
-  const [fishTypeInfo, setFishTypeInfo] = React.useState({
-    fish_name: "",
-    // coopid: ""
+  const [showModal, setShowModal] = useState({ modal: "", closed: true });
+  const [productionInfo, setLocationInfo] = React.useState({
+    production_tons: "",
+    environment_id: "",
   });
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
-    toast.promise(AppServices.createItem("fishtypes", fishTypeInfo), {
-      loading: "Creating fishTypes ...",
+    toast.promise(AppServices.createItem("production", productionInfo), {
+      loading: "Creating production ...",
       success: (response) => {
-        dispatch(setFishTypes([...fishTypes, response.data.data]));
+        dispatch(setProduction([...productions, response.data.data]));
         closeModal();
-        return "FishType created successfully";
+        return "Location created successfully";
       },
       error: (error) => {
         const message =
@@ -43,20 +47,20 @@ function FishTypes() {
 
   const handleEdit = () => {
     toast.promise(
-      AppServices.updateItem(`fishtypes/${fishTypeInfo.id}`, fishTypeInfo),
+      AppServices.updateItem(`production/${productionInfo.id}`, productionInfo),
       {
-        loading: "Editing fishType ...",
+        loading: "Editing production ...",
         success: (response) => {
           dispatch(
-            setFishTypes([
-              ...fishTypes.filter(
-                (fishTypes) => fishTypes.id !== fishTypeInfo.id
+            setProduction([
+              ...productions.filter(
+                (production) => production.id !== productionInfo.id
               ),
               response.data.data,
             ])
           );
           closeModal();
-          return "FishType edited successfully";
+          return "Location edited successfully";
         },
         error: (error) => {
           const message =
@@ -73,18 +77,18 @@ function FishTypes() {
   };
 
   const handleDelete = () => {
-    toast.promise(AppServices.deleteItem(`fishtypes/${fishTypeInfo.id}`), {
-      loading: "Deleting fishType ...",
+    toast.promise(AppServices.deleteItem(`production/${productionInfo.id}`), {
+      loading: "Deleting production ...",
       success: (response) => {
         dispatch(
-          setFishTypes([
-            ...fishTypes.filter(
-              (fishTypes) => fishTypes.id !== fishTypeInfo.id
+          setProduction([
+            ...productions.filter(
+              (production) => production.id !== productionInfo.id
             ),
           ])
         );
         closeModal();
-        return "FishType deleted successfully";
+        return "Location deleted successfully";
       },
       error: (error) => {
         const message =
@@ -101,7 +105,7 @@ function FishTypes() {
 
   return (
     <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
-      <h1 className="text-3xl font-bold">Fish Types</h1>
+      <h1 className="text-3xl font-bold">Fish Production</h1>
       <div className="flex flex-col w-full">
         {!showModal.closed && (
           <Modal>
@@ -128,7 +132,7 @@ function FishTypes() {
                     Think twice. Are you sure?
                   </h4>
                   <p className="font-medium text-black">
-                    Once you delete this fishType, there is no going back.
+                    Once you delete this production, there is no going back.
                   </p>
                 </div>
                 <div className="px-6 pt-5 pb-6 -mb-2 text-right bg-white">
@@ -158,20 +162,42 @@ function FishTypes() {
                   >
                     <label className="block mb-4">
                       <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Name *
+                        production *
                       </p>
                       <input
                         className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                         id="signInInput1-1"
+                        type="number"
+                        required
                         onChange={(e) =>
-                          setFishTypeInfo({
-                            ...fishTypeInfo,
-                            fish_name: e.target.value,
+                          setLocationInfo({
+                            ...productionInfo,
+                            production_tons: e.target.value,
                           })
                         }
-                        type="text"
-                        placeholder="Enter name"
                       />
+                    </label>
+                    <label className="block mb-5">
+                      <p className="mb-2 font-semibold leading-normal text-gray-900">
+                        Pond environment *
+                      </p>
+                      <select
+                        required
+                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                        onChange={(e) =>
+                          setLocationInfo({
+                            ...productionInfo,
+                            environment_id: e.target.value,
+                          })
+                        }
+                      >
+                        <option value=""></option>
+                        {environments.map((el) => (
+                          <option key={el.id} value={el.id}>
+                            {el.id}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                     <input type="submit" value="" hidden id="create" />
                   </form>
@@ -184,10 +210,10 @@ function FishTypes() {
                     Cancel
                   </button>
                   <button
+                    className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                     onClick={() => {
                       document.getElementById("create").click();
                     }}
-                    className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                   >
                     Add
                   </button>
@@ -206,21 +232,45 @@ function FishTypes() {
                     >
                       <label className="block mb-4">
                         <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Name *
+                          Production *
                         </p>
                         <input
                           className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
                           id="signInInput1-1"
-                          defaultValue={fishTypeInfo.fish_name}
+                          type="number"
+                          defaultValue={productionInfo.production_tons}
+                          placeholder="Enter pond production_tons"
+                          required
                           onChange={(e) =>
-                            setFishTypeInfo({
-                              ...fishTypeInfo,
-                              fish_name: e.target.value,
+                            setLocationInfo({
+                              ...productionInfo,
+                              production_tons: e.target.value,
                             })
                           }
-                          type="text"
-                          placeholder="Enter name"
                         />
+                      </label>
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Pond environment *
+                        </p>
+                        <select
+                          defaultValue={productionInfo.environment_id}
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setLocationInfo({
+                              ...productionInfo,
+                              environment_id: e.target.value,
+                            })
+                          }
+                        >
+                          <option value=""></option>
+                          {environments.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.id}
+                            </option>
+                          ))}
+                        </select>
                       </label>
                       <input type="submit" value="" hidden id="create" />
                     </form>
@@ -233,12 +283,12 @@ function FishTypes() {
                       Cancel
                     </button>
                     <button
+                      className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                       onClick={() => {
                         document.getElementById("create").click();
                       }}
-                      className="inline-block w-full px-5 py-3 mb-2 font-semibold leading-6 text-center transition duration-200 bg-red-500 rounded-lg sm:w-auto text-blue-50 hover:bg-red-600"
                     >
-                      Save Changes
+                      Save
                     </button>
                   </div>
                 </div>
@@ -299,7 +349,7 @@ function FishTypes() {
                           </svg>
                         </div>
                         <div className="hidden font-bold sm:block">
-                          Add new fish type
+                          Add new production
                         </div>
                       </span>
                     </button>
@@ -330,13 +380,19 @@ function FishTypes() {
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Type ID
+                      Production ID
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
                     >
-                      Type Name
+                      Production [tons]
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Pond Environment ID
                     </th>
                     {user?.type !== "rab" && (
                       <>
@@ -357,7 +413,7 @@ function FishTypes() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {fishTypes.map((fishType) => (
+                  {productions.map((production) => (
                     <tr>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
@@ -371,17 +427,20 @@ function FishTypes() {
                         </div>
                       </td> */}
                       <td className="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
-                        {fishType.id}
+                        {production.id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {fishType.fish_name}
+                        {production.production_tons}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {production.environment_id}
                       </td>
                       {user?.type !== "rab" && (
                         <>
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <a
                               onClick={() => {
-                                setFishTypeInfo(fishType);
+                                setLocationInfo(production);
                                 setShowModal({ modal: "edit", closed: false });
                               }}
                               className="text-green-500 hover:text-green-700"
@@ -393,7 +452,7 @@ function FishTypes() {
                           <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                             <a
                               onClick={() => {
-                                setFishTypeInfo(fishType);
+                                setLocationInfo(production);
                                 setShowModal({
                                   modal: "delete",
                                   closed: false,
@@ -419,4 +478,4 @@ function FishTypes() {
   );
 }
 
-export default FishTypes;
+export default Production;

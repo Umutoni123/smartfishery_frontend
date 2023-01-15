@@ -15,7 +15,7 @@ export const LocationsSlice = createSlice({
     setLocations: (state, action) => {
       state.locations = action.payload;
       state.locationsDictionary = action.payload.reduce((acc, location) => {
-        acc[location.Pond_Id] = location;
+        acc[location.id] = location;
         return acc;
       }, {});
       state.isLocationsLoaded = true;

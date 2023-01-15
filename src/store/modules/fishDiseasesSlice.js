@@ -15,7 +15,7 @@ export const FishDiseasesSlice = createSlice({
     setFishDiseases: (state, action) => {
       state.fishDiseases = action.payload;
       state.fishDiseasesDictionary = action.payload.reduce((acc, fishType) => {
-        acc[fishType.Type_Id] = fishType;
+        acc[fishType.id] = fishType;
         return acc;
       }, {});
       state.isFishDiseasesLoaded = true;
