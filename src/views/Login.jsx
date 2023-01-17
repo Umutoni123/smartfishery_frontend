@@ -16,8 +16,7 @@ function Login() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      console.log("logged in")
-      history.push("/fishponds");
+      history.push("/dashboard");
     } else {
       dispatch(loadUser());
     }

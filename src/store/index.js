@@ -12,6 +12,7 @@ import productionReducer from './modules/productionSlice';
 import usersReducer from './modules/usersSlice';
 import userRolesReducer from './modules/userRolesSlice';
 import pondDiseasesReducer from './modules/pondDiseasesSlice';
+import recordingsReducer from './modules/recordingsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -26,5 +27,6 @@ export const store = configureStore({
     users: usersReducer,
     userRoles: userRolesReducer,
     pondDiseases: pondDiseasesReducer,
+    recordings: recordingsReducer,
   },
 })

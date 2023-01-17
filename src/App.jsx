@@ -9,9 +9,11 @@ import FishPonds from "./views/FishPonds";
 import FishTypes from "./views/FishTypes";
 
 import Home from "./views/Home";
+import Index from "./views/Index";
 import Locations from "./views/Locations";
 import Login from "./views/Login";
 import NotFound from "./views/NotFound";
+import PondDetails from "./views/PondDetails";
 import PondDiseases from "./views/PondDiseases";
 import PondEnvironments from "./views/PondEnvironments";
 import Production from "./views/Production";
@@ -31,6 +33,9 @@ const App = () => {
         </Route>
         <Route exact path="/login">
           <Login />
+        </Route>
+        <Route exact path="/dashboard">
+          <Dashboard children={<Index />} />
         </Route>
         <Route exact path="/fishponds">
           <Dashboard children={<FishPonds />} />
@@ -52,6 +57,9 @@ const App = () => {
         </Route>
         <Route exact path="/ponddiseases">
           <Dashboard children={<PondDiseases />} />
+        </Route>
+        <Route exact path="/fishponds/:id">
+          <Dashboard children={<PondDetails />} />
         </Route>
         <Route exact path="/userroles">
           <Dashboard

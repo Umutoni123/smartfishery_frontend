@@ -171,7 +171,7 @@ export default function Table() {
             <div className="relative">
               <button
                 onClick={() => setShowModal({ modal: "add", closed: false })}
-                className="relative z-0 inline-flex text-sm rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1"
+                className="relative z-0 inline-flex text-sm ml-auto rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1"
               >
                 <span className="relative inline-flex items-center px-3 py-3 space-x-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md sm:py-2">
                   <div>
@@ -271,7 +271,13 @@ export default function Table() {
                     Kicukiro
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -309,7 +315,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -347,7 +359,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -385,7 +403,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -423,7 +447,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -461,7 +491,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -499,7 +535,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>
@@ -537,7 +579,13 @@ export default function Table() {
                     Nyamirambo
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                    <a onClick={() => setShowModal({ modal: "edit", closed: false })} className="text-green-500 hover:text-green-700" href="#">
+                    <a
+                      onClick={() =>
+                        setShowModal({ modal: "edit", closed: false })
+                      }
+                      className="text-green-500 hover:text-green-700"
+                      href="#"
+                    >
                       Edit
                     </a>
                   </td>

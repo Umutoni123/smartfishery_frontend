@@ -104,8 +104,12 @@ function SideBar() {
             <ul className="text-sm font-medium">
               <li>
                 <a
-                  className="flex items-center py-3 pl-3 pr-2 rounded hover:bg-gray-900 text-gray-50"
-                  href="#"
+                  className={`flex items-center py-3 pl-3 pr-2 rounded hover:bg-gray-900 text-gray-50 ${
+                    history.location.pathname.includes("dashboard")
+                      ? "bg-indigo-500"
+                      : ""
+                  }`}
+                  onClick={() => history.push(`/dashboard`)}
                 >
                   <span>Dashboard</span>
                 </a>

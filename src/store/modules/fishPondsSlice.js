@@ -5,6 +5,7 @@ import {
 const initialState = {
   fishPonds: [],
   fishPondsDictionary: {},
+  selectedFishPond: null,
   isFishPondsLoaded: false,
 };
 
@@ -20,15 +21,20 @@ export const FishPondsSlice = createSlice({
       }, {});
       state.isFishPondsLoaded = true;
     },
+    setSelectedFishPond: (state, action) => {
+      state.selectedFishPond = action.payload;
+    }
   },
 });
 
 export const {
   setFishPonds,
+  setSelectedFishPond,
 } = FishPondsSlice.actions;
 
 export const selectFishPonds = (state) => state.fishPonds.fishPonds;
 export const selectIsFishPondsLoaded = (state) => state.fishPonds.isFishPondsLoaded;
 export const selectFishPondsDictionary = (state) => state.fishPonds.fishPondsDictionary;
+export const selectSelectedFishPond = (state) => state.fishPonds.selectedFishPond;
 
 export default FishPondsSlice.reducer;
