@@ -14,17 +14,24 @@ export const RecordingsSlice = createSlice({
   reducers: {
     setRecordings: (state, action) => {
       state.recordings = action.payload;
-      state.recordingsDictionary = action.payload.reduce((acc, fishPond) => {
-        acc[fishPond.id] = fishPond;
+      state.recordingsDictionary = action.payload.reduce((acc, el) => {
+        acc[el.entry_id] = el;
         return acc;
       }, {});
       state.isRecordingsLoaded = true;
     },
+    addRecording: (state, action) => {
+      if (!state.recordingsDictionary[action.payload.entry_id]) {
+        state.recordings.unshift(action.payload);
+        state.recordingsDictionary[action.payload.entry_id] = action.payload;
+      }
+    }
   },
 });
 
 export const {
   setRecordings,
+  addRecording
 } = RecordingsSlice.actions;
 
 export const selectRecordings = (state) => {

@@ -9,7 +9,6 @@ function SideBar() {
   const dispatch = useDispatch();
 
   const user = useSelector(selectUser);
-  console.log(user);
   const [routes, setRoutes] = useState([
     "Fish ponds",
     "Locations",

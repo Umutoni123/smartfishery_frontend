@@ -1,16 +1,13 @@
 import React, { useEffect } from "react";
 import Modal from "../components/Modal/Modal";
 import {
+  addRecording,
   selectRecordings,
+  selectRecordingsDictionary,
   setRecordings,
 } from "../store/modules/recordingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
 import AppServices from "../services";
-import {
-  selectCooperatives,
-  selectCooperativesDictionary,
-} from "../store/modules/cooperativeSlice";
 import { selectUser } from "../store/modules/authSlice";
 import {
   selectFishPonds,
@@ -18,16 +15,41 @@ import {
   setSelectedFishPond,
 } from "../store/modules/fishPondsSlice";
 import { useHistory } from "react-router-dom";
+import Pusher from "pusher-js";
 
 function PondDetails() {
   const recordings = useSelector(selectRecordings);
-  const cooperativesDict = useSelector(selectCooperativesDictionary);
   const selectedFishPond = useSelector(selectSelectedFishPond);
+  const recordingsDict = useSelector(selectRecordingsDictionary);
   const fishPonds = useSelector(selectFishPonds);
   const user = useSelector(selectUser);
   const history = useHistory();
   const dispatch = useDispatch();
   const id = history.location.pathname.split("/").pop();
+
+  // Pusher.logToConsole = true;
+
+  var pusher = new Pusher("55d8c9266cc794b1f34d", {
+    cluster: "mt1",
+  });
+
+  var channel = pusher.subscribe("fishPond." + id);
+  channel.bind("newRecording", function (e) {
+    dispatch(addRecording(e.recording));
+  });
+
+  // window.Pusher = pusher;
+
+  // window.Echo = new Echo({
+  //   broadcaster: "pusher",
+  //   key: "55d8c9266cc794b1f34d",
+  //   cluster: "mt1",
+  //   encrypted: true,
+  // });
+
+  // window.Echo.channel("fishPond." + id).listen("newRecording", (e) => {
+  //   console.log("new recording \n\n", e);
+  // });
 
   useEffect(() => {
     // check if selectedFishPond is included in the url
@@ -109,7 +131,7 @@ function PondDetails() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {recordings.map((el) => (
-                    <tr key={el.id}>
+                    <tr key={el.entry_id}>
                       {/* <td className="py-3 pl-4">
                         <div className="flex items-center h-5">
                           <input
