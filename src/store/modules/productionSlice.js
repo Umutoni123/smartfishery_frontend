@@ -4,6 +4,7 @@ import {
 
 const initialState = {
   production: [],
+  productionStats: [],
   productionDictionary: {},
   isProductionLoaded: false,
 };
@@ -20,14 +21,19 @@ export const ProductionSlice = createSlice({
       }, {});
       state.isProductionLoaded = true;
     },
+    setProductionStats: (state, action) => {
+      state.productionStats = action.payload;
+    }
   },
 });
 
 export const {
   setProduction,
+  setProductionStats
 } = ProductionSlice.actions;
 
 export const selectProduction = (state) => state.production.production;
+export const selectProductionStats = (state) => state.production.productionStats;
 export const selectIsProductionLoaded = (state) => state.production.isProductionLoaded;
 export const selectProductionDictionary = (state) => state.production.productionDictionary;
 

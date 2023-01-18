@@ -1,103 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { ResponsiveLine } from "@nivo/line";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/modules/authSlice";
+import { selectProductionStats } from "../store/modules/productionSlice";
 
 function Index() {
-  const [chartData, setChartData] = useState([
-    {
-      id: "ph",
-      color: "hsl(235, 70%, 50%)",
-      data: [
-        {
-          x: "12/12/2020",
-          y: 33,
-        },
-        {
-          x: "12/13/2020",
-          y: 150,
-        },
-        {
-          x: "12/14/2020",
-          y: 168,
-        },
-        {
-          x: "12/15/2020",
-          y: 19,
-        },
-        {
-          x: "12/16/2020",
-          y: 69,
-        },
-        {
-          x: "12/17/2020",
-          y: 217,
-        },
-        {
-          x: "12/18/2020",
-          y: 143,
-        },
-        {
-          x: "12/19/2020",
-          y: 236,
-        },
-        {
-          x: "12/20/2020",
-          y: 43,
-        },
-        {
-          x: "12/21/2020",
-          y: 90,
-        },
-        {
-          x: "12/22/2020",
-          y: 82,
-        },
-        {
-          x: "12/23/2020",
-          y: 33,
-        },
-      ],
-    },
-  ]);
+  const user = useSelector(selectUser);
+  const statistics = useSelector(selectProductionStats);
+  const [chartData, setChartData] = useState([]);
 
-  const colorDict = {
-    Velocity: "#FF0000",
-    "Velocity Distribution": "#0000FF",
-  };
-
-  // useEffect(() => {
-  //   if (chartData.length === 0) {
-  //     const data = [
-  //       {
-  //         id: "Temperature",
-  //         data: [],
-  //       },
-  //       {
-  //         id: "PH",
-  //         data: [],
-  //       },
-  //     ];
-  //     for (let i = 0; i < 50; i++) {
-  //       // add data in the format below
-  //       // {
-  //       //   x: "12/12/2020",
-  //       //   y: Math.random() * 100
-  //       // }
-  //       data[0].data.push({
-  //         x: i,
-  //         y: Math.random() * 100,
-  //       });
-  //       data[1].data.push({
-  //         x: i,
-  //         y: Math.random() * 100,
-  //       });
-  //     }
-  //     setChartData(data);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (chartData.length === 0 && statistics.length > 0) {
+      setChartData([
+        {
+          id: "Production",
+          data: statistics.map((stat) => {
+            return {
+              x: new Date(stat.created_at).toLocaleString(),
+              y: stat.production_tons,
+            };
+          }),
+        },
+      ]);
+    }
+  }, [statistics]);
 
   return (
     <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
-      <h1 className="text-3xl font-bold">Welcome !</h1>
+      <h1 className="text-3xl font-bold">Welcome {user?.full_name} !</h1>
       <div className="flex flex-col w-full">
         <div className="chartContainer">
           <ResponsiveLine

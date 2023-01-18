@@ -32,7 +32,8 @@ function SideBar() {
 
   const handleLogout = () => {
     dispatch(logout());
-    // history.push("/login");
+    // reload the page
+    history.go(0);
   };
 
   return (

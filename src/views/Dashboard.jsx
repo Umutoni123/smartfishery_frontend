@@ -16,7 +16,7 @@ import { setCooperatives } from "../store/modules/cooperativeSlice";
 import { setFishTypes } from "../store/modules/fishTypesSlice";
 import { setFishDiseases } from "../store/modules/fishDiseasesSlice";
 import { setPondEnvironments } from "../store/modules/pondEnvironmentsSlice";
-import { setProduction } from "../store/modules/productionSlice";
+import { setProduction, setProductionStats } from "../store/modules/productionSlice";
 import { setUsers } from "../store/modules/usersSlice";
 import { setUserRoles } from "../store/modules/userRolesSlice";
 import { setPondDiseases } from "../store/modules/pondDiseasesSlice";
@@ -39,6 +39,11 @@ function Dashboard({ children }) {
     if (!loaded) {
       dispatch(loadUser());
     } else {
+      AppServices.getItems("production/1").then((response) => {
+        if (response.data) {
+          dispatch(setProductionStats(response.data.data));
+        }
+      });
       AppServices.getItems("locations").then((response) => {
         if (response.data) {
           dispatch(setLocations(response.data.data));
