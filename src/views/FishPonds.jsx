@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Modal from "../components/Modal/Modal";
 import { selectFishPonds, setFishPonds } from "../store/modules/fishPondsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,9 +25,26 @@ function FishPonds() {
     name: "",
     cooperative_id: "",
   });
+
+  useEffect(() => {
+    if (
+      user?.role &&
+      user?.role.cooperative_id !== fishPondInfo.cooperative_id
+    ) {
+      setFishPondInfo({
+        ...fishPondInfo,
+        cooperative_id: user?.role.cooperative_id,
+      });
+    }
+  }, [fishPondInfo]);
+
   const dispatch = useDispatch();
 
   const handleSubmit = () => {
+    if (user?.type === "cooperativemanager" && !user?.role) {
+      return toast.error("You are not assigned to any cooperative");
+    }
+
     toast.promise(AppServices.createItem("fishponds", fishPondInfo), {
       loading: "Creating fishPond ...",
       success: (response) => {
@@ -180,28 +197,30 @@ function FishPonds() {
                         placeholder="Enter pond name"
                       />
                     </label>
-                    <label className="block mb-5">
-                      <p className="mb-2 font-semibold leading-normal text-gray-900">
-                        Cooperative *
-                      </p>
-                      <select
-                        required
-                        className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                        onChange={(e) =>
-                          setFishPondInfo({
-                            ...fishPondInfo,
-                            cooperative_id: e.target.value,
-                          })
-                        }
-                      >
-                        <option value=""></option>
-                        {cooperatives.map((el) => (
-                          <option key={el.id} value={el.id}>
-                            {el.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    {user?.type !== "cooperativemanager" && (
+                      <label className="block mb-5">
+                        <p className="mb-2 font-semibold leading-normal text-gray-900">
+                          Cooperative *
+                        </p>
+                        <select
+                          required
+                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                          onChange={(e) =>
+                            setFishPondInfo({
+                              ...fishPondInfo,
+                              cooperative_id: e.target.value,
+                            })
+                          }
+                        >
+                          <option value=""></option>
+                          {cooperatives.map((el) => (
+                            <option key={el.id} value={el.id}>
+                              {el.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
                     <input type="submit" value="" hidden id="create" />
                   </form>
                 </div>
@@ -251,29 +270,31 @@ function FishPonds() {
                           placeholder="Enter pond name"
                         />
                       </label>
-                      <label className="block mb-5">
-                        <p className="mb-2 font-semibold leading-normal text-gray-900">
-                          Cooperative *
-                        </p>
-                        <select
-                          required
-                          defaultValue={fishPondInfo.cooperative_id}
-                          className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
-                          onChange={(e) =>
-                            setFishPondInfo({
-                              ...fishPondInfo,
-                              cooperative_id: e.target.value,
-                            })
-                          }
-                        >
-                          <option value=""></option>
-                          {cooperatives.map((el) => (
-                            <option key={el.id} value={el.id}>
-                              {el.name}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      {user?.type !== "cooperativemanager" && (
+                        <label className="block mb-5">
+                          <p className="mb-2 font-semibold leading-normal text-gray-900">
+                            Cooperative *
+                          </p>
+                          <select
+                            required
+                            defaultValue={fishPondInfo.cooperative_id}
+                            className="px-4 py-3.5 w-full text-gray-400 font-medium placeholder-gray-400 bg-white outline-none border border-gray-300 rounded-lg focus:ring focus:ring-indigo-300"
+                            onChange={(e) =>
+                              setFishPondInfo({
+                                ...fishPondInfo,
+                                cooperative_id: e.target.value,
+                              })
+                            }
+                          >
+                            <option value=""></option>
+                            {cooperatives.map((el) => (
+                              <option key={el.id} value={el.id}>
+                                {el.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
                       <input type="submit" value="" hidden id="create" />
                     </form>
                   </div>
