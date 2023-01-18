@@ -20,14 +20,10 @@ import Pusher from "pusher-js";
 function PondDetails() {
   const recordings = useSelector(selectRecordings);
   const selectedFishPond = useSelector(selectSelectedFishPond);
-  const recordingsDict = useSelector(selectRecordingsDictionary);
   const fishPonds = useSelector(selectFishPonds);
-  const user = useSelector(selectUser);
   const history = useHistory();
   const dispatch = useDispatch();
   const id = history.location.pathname.split("/").pop();
-
-  // Pusher.logToConsole = true;
 
   var pusher = new Pusher("55d8c9266cc794b1f34d", {
     cluster: "mt1",
@@ -63,7 +59,7 @@ function PondDetails() {
   useEffect(() => {
     if (selectedFishPond?.id == id && recordings.length == 0) {
       // add id in path
-      AppServices.getItems("recordings").then((response) => {
+      AppServices.getItems("recordings?fishPondId=" + id).then((response) => {
         if (response.data) {
           dispatch(setRecordings(Object.values(response.data.data)));
         }
@@ -76,7 +72,7 @@ function PondDetails() {
       <h1 className="text-3xl font-bold">Fish Pond Details</h1>
       <div className="flex flex-col w-full">
         <div className="overflow-x-auto">
-          <div className="flex justify-between py-3 pl-2">
+          {/* <div className="flex justify-between py-3 pl-2">
             <button className="relative z-0 inline-flex text-sm ml-auto rounded-md shadow-sm focus:ring-accent-500 focus:border-accent-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1">
               <span className="relative inline-flex items-center px-3 py-3 space-x-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md sm:py-2">
                 <div className="hidden font-bold sm:block">
@@ -84,7 +80,7 @@ function PondDetails() {
                 </div>
               </span>
             </button>
-          </div>
+          </div> */}
 
           <div className="p-1.5 w-full inline-block align-middle">
             <div className="overflow-hidden border rounded-lg">
@@ -127,6 +123,12 @@ function PondDetails() {
                     >
                       PH
                     </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase "
+                    >
+                      Predicted Weight
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -147,13 +149,16 @@ function PondDetails() {
                         {el.entry_id}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                        {el.created_at}
+                        {new Date(el.created_at).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {el.temperature}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                         {el.ph}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                        {parseFloat(el.fish_weight).toFixed(2)} mg
                       </td>
                     </tr>
                   ))}

@@ -25,7 +25,7 @@ export const RecordingsSlice = createSlice({
         state.recordings.unshift(action.payload);
         state.recordingsDictionary[action.payload.entry_id] = action.payload;
       }
-    }
+    },
   },
 });
 
@@ -35,8 +35,7 @@ export const {
 } = RecordingsSlice.actions;
 
 export const selectRecordings = (state) => {
-  return state.recordings.recordings;
-  // return state.recordings.recordings.filter(recording => recording.fishPondId === state.fishPonds.selectedFishPond.id);
+  return state.recordings.recordings.filter(recording => recording.fishPondId == state.fishPonds.selectedFishPond.id);
 };
 export const selectIsRecordingsLoaded = (state) => state.recordings.isRecordingsLoaded;
 export const selectRecordingsDictionary = (state) => state.recordings.recordingsDictionary;

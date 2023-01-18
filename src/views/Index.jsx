@@ -8,51 +8,51 @@ function Index() {
       color: "hsl(235, 70%, 50%)",
       data: [
         {
-          x: "plane",
+          x: "12/12/2020",
           y: 33,
         },
         {
-          x: "helicopter",
+          x: "12/13/2020",
           y: 150,
         },
         {
-          x: "boat",
+          x: "12/14/2020",
           y: 168,
         },
         {
-          x: "train",
+          x: "12/15/2020",
           y: 19,
         },
         {
-          x: "subway",
+          x: "12/16/2020",
           y: 69,
         },
         {
-          x: "bus",
+          x: "12/17/2020",
           y: 217,
         },
         {
-          x: "car",
+          x: "12/18/2020",
           y: 143,
         },
         {
-          x: "moto",
+          x: "12/19/2020",
           y: 236,
         },
         {
-          x: "bicycle",
+          x: "12/20/2020",
           y: 43,
         },
         {
-          x: "horse",
+          x: "12/21/2020",
           y: 90,
         },
         {
-          x: "skateboard",
+          x: "12/22/2020",
           y: 82,
         },
         {
-          x: "others",
+          x: "12/23/2020",
           y: 33,
         },
       ],
@@ -99,7 +99,6 @@ function Index() {
     <div className="flex flex-col items-start float-right w-10/12 px-10 my-10 space-y-5">
       <h1 className="text-3xl font-bold">Welcome !</h1>
       <div className="flex flex-col w-full">
-        <div className="headingTitle mb-4 md:mb-0">Velocity</div>
         <div className="chartContainer">
           <ResponsiveLine
             data={chartData}
@@ -119,7 +118,7 @@ function Index() {
               orient: "bottom",
               tickSize: 5,
               tickPadding: 5,
-              tickRotation: 0,
+              tickRotation: -30,
               legend: "Date Time",
               legendOffset: 36,
               legendPosition: "middle",
